@@ -1,5 +1,5 @@
 ---
-title: "논문 요약 - Decision-Focused Learning"
+title: "Paper review - Decision-Focused Learning"
 date: 2025-09-05 00:00:00 +0900
 categories: [paper review, Decision Focused Learning]
 tags: [Decision-Focused Learning, Predict+Optimize]
