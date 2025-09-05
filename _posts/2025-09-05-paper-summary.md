@@ -1,6 +1,6 @@
 ---
 title: "논문 요약 - Decision-Focused Learning"
-date: 2025-09-05 14:30:00 +0900
+date: 2025-09-05 00:00:00 +0900
 categories: [논문정리, Machine Learning]
 tags: [Decision-Focused Learning, Predict+Optimize]
 ---
