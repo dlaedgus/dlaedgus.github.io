@@ -196,7 +196,7 @@ $$
 
 ---
 
-## 12) Extended Notes — 정리/배경 메모 (원문 의미 100% 유지)
+## 12) Extended Notes — 정리/배경
 
 ### 12.1 전체 파이프라인의 맥락
 - 현실 AI 응용의 목표: **data → predictive models → decision making** 파이프라인 구축  
@@ -210,7 +210,7 @@ $$
 - 예: **Loss를 낮췄는데** 실제로는 **잘못된 decision**을 낼 수 있음  
 - **Loss를 optimization 목표와 일치**시키기 위한 hand-tuning은 어려워 **대부분 생략**
 
-### 12.3 논문의 해결책 (요약 재강조)
+### 12.3 논문의 해결책
 - **Decision-Focused Learning**: prediction + optimization을 하나의 **end-to-end** 시스템으로 통합  
 - 과거: `[ML 따로 학습] → [결과를 optimization에 넣음]`  
 - 제안: `[ML 모델 안에서 optimization까지 같이 수행]` → **하나의 큰 end-to-end 모델**  
