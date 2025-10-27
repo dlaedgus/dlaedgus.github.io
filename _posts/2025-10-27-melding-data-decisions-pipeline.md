@@ -1,10 +1,11 @@
-<img width="1421" height="304" alt="image" src="https://github.com/user-attachments/assets/9f247f48-ac43-4f61-a3f2-87e8ee86f8a3" />---
+<img width="609" height="279" alt="image" src="https://github.com/user-attachments/assets/b63ce52d-08e7-43ce-875e-5da393404aac" /><img width="1421" height="304" alt="image" src="https://github.com/user-attachments/assets/9f247f48-ac43-4f61-a3f2-87e8ee86f8a3" />---
 title: "Melding the Data-Decisions Pipeline (AAAI 2019)"
 date: 2025-10-27 12:00:00 +0900
 categories: [paper_review, decision_focused_learning]
 tags: [decision-focused-learning, predict-then-optimize, combinatorial-optimization, aaai2019, submodular, lp, kkt, interior-point]
 math: true
 ---
+<img width="1533" height="1412" alt="image" src="https://github.com/user-attachments/assets/fc5d23ce-5459-4a67-8b61-2c8cf1594f06" />
 
 # Paper Review — *Melding the Data-Decisions Pipeline: Decision-Focused Learning for Combinatorial Optimization* (AAAI 2019)
 
@@ -247,3 +248,48 @@ $$
 
 ---
 <img width="1421" height="304" alt="image" src="https://github.com/user-attachments/assets/5a37f4e9-9fa7-4130-8b60-3e805ac5f606" />
+<img width="1221" height="238" alt="image" src="https://github.com/user-attachments/assets/3da4bd4e-a269-4099-a899-5a3364c2896d" />
+---
+
+## 16) Experiments — Table & Figures Summary
+
+### Table 1 — Solution quality of each method for the full data-decisions pipeline
+**목적:** 최종적인 의사결정(최적화 문제)에서 각 방법이 얼마나 좋은 해를 찾았는지를 비교  
+**포인트:**  
+- NN1-Decision, NN2-Decision: 대부분의 경우에서 성능이 우수함 (특히 Budget Allocation에서 NN1-Decision 최고 성능)  
+- Two-stage 방법들 (NN1-2Stage, NN2-2Stage)은 예측 모델 정확도는 높을 수 있어도 의사결정 품질은 낮음  
+- Random이나 RF-2Stage는 baseline 역할  
+
+---
+
+### Table 2 — Accuracy of each method according to standard measures
+**목적:** 예측 정확도 (MSE, CE, AUC 등)를 기준으로 각 모델을 평가  
+**포인트:**  
+- Two-stage 방식(NN1-2Stage, NN2-2Stage)이 예측 정확도는 더 높음  
+- 특히 Matching, Diverse Recommendation에서 CE, AUC 기준으로 Decision 방식보다 낫지만  
+- **Table 1과 대조하면 예측이 잘 된다고 해서 좋은 결정이 나오는 것은 아님**을 보여줌  
+
+---
+
+### Figure 1 — Heatmaps
+**목적:** 예측된 $\theta$ 행렬을 시각적으로 비교  
+(a) 실제 ground truth  
+(b) NN1-2Stage의 예측  
+(c) NN1-Decision의 예측  
+
+**포인트:**  
+- (b)는 ground truth 구조를 따르지만 실제 최적화 성능은 비효율적  
+- (c)는 구조가 달라도 **최적화 목적에 더 부합하는 형태로 학습됨**
+
+---
+
+### Figure 2 — Scatter plots
+**목적:** 각 아이템의 예측된 총 out-weight와 실제값의 상관관계(정확도) 비교  
+
+- 왼쪽: Decision 방식 (NN1-Decision) → $r^2 = 0.94$  
+- 오른쪽: Two-stage 방식 (NN1-2Stage) → $r^2 = 0.64$  
+
+
+<img width="604" height="433" alt="image" src="https://github.com/user-attachments/assets/58ef464f-a12a-4bf5-bf4d-94e98ccd9eda" />
+<img width="609" height="279" alt="image" src="https://github.com/user-attachments/assets/24d744b7-943a-444e-be6e-93973e92b4f4" />
+
