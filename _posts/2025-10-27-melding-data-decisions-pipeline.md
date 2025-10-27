@@ -1,4 +1,4 @@
----
+<img width="1421" height="304" alt="image" src="https://github.com/user-attachments/assets/9f247f48-ac43-4f61-a3f2-87e8ee86f8a3" />---
 title: "Melding the Data-Decisions Pipeline (AAAI 2019)"
 date: 2025-10-27 12:00:00 +0900
 categories: [paper_review, decision_focused_learning]
@@ -246,3 +246,4 @@ $$
 - 대표 응용: **budget allocation**, **sensor placement**, **facility location**, **diverse recommendation** 등
 
 ---
+<img width="1421" height="304" alt="image" src="https://github.com/user-attachments/assets/5a37f4e9-9fa7-4130-8b60-3e805ac5f606" />
