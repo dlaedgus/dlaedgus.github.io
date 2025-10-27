@@ -2,46 +2,44 @@
 title: "Melding the Data-Decisions Pipeline (AAAI 2019)"
 date: 2025-10-27 12:00:00 +0900
 categories: [paper_review, decision_focused_learning]
-tags: [decision-focused-learning, predict-then-optimize, combinatorial-optimization, aaai2019, submodular, lp, kkt, interior-point]
+tags: [decision-focused-learning, predict-then-optimize, combinatorial-optimization, aaai2019, submodular, lp, kkt]
 math: true
 ---
 
-Melding the Data-Decisions Pipeline:  
-Decision-Focused Learning for Combinatorial  
-Optimization  
+# Melding the Data-Decisions Pipeline: Decision-Focused Learning for Combinatorial Optimization
+
 **1저자:** Bryan Wilder  
-**제목:** Melding the Data-Decisions Pipeline: Decision-Focused Learning for Combinatorial  
-Optimization  
+**제목:** Melding the Data-Decisions Pipeline: Decision-Focused Learning for Combinatorial Optimization  
 **저널명:** The Thirty-Third AAAI Conference on Artificial Intelligence  
 **년도:** 2019
 
 ---
 
-## High-Level Summary (3–5 sentences)
+## 1) High-Level Summary (3–5 sentences)
 
 본 논문은 예측(predictive modeling)과 최적화(decision making)를 별도로 수행하던 기존 방식의 한계를 극복하기 위해, Decision-Focused Learning이라는 Framework를 제안. 이 접근법은 ML model 학습과 조합 최적화(combinatorial optimization)를 end-to-end로 통합하여, 단순한 예측 정확도가 아닌 최종 의사결정의 품질을 최적화함. 이를 위해 미분이 어려운 이산 최적화 문제를 continuous relaxation 방식으로 변환하고, 미분 가능한 surrogate objective를 통해 gradient-based 학습이 가능하도록 설계. 제안된 방법은 linear programming 및 submodular maximization 문제에 적용되며, 실험을 통해 전통적인 two-stage 방법보다 일관되게 더 나은 최종 결정 품질을 달성함을 입증.
 
 ---
 
-## 논문이 풀고자 하는 문제
+## 2) Problem — 논문이 풀고자 하는 문제
 
 전통적인 예측→최적화 방식(two-stage learning)은 예측 정확도는 높지만, 실제 최적화 의사결정 품질에는 직접적으로 연결되지 않는다는 한계가 있음.
 
 ---
 
-## 어떤 방법으로 이 문제를 해결
+## 3) Proposed Method — 어떤 방법으로 이 문제를 해결
 
 의사결정 품질 자체에 초점을 맞춰 학습을 진행하는 decision-focused learning을 제안. 이를 위해 조합 최적화 문제를 연속적으로 이완하고, 미분가능한 surrogate loss를 정의하여 end-to-end 학습을 가능하게 함.
 
 ---
 
-## application area
+## 4) Application Area
 
 budget allocation, sensor placement, facility location, bipartite matching. Submodular maximization, Diverse recommendation.
 
 ---
 
-## 기여(contribution)
+## 5) Contributions — 기여
 
 - 조합 최적화 문제에 대해 differentiable surrogate 기반의 학습 구조를 제안  
 - Linear programming 및 submodular maximization 문제 각각에 적용 가능한 continuous relaxation 기법을 사용  
@@ -49,25 +47,25 @@ budget allocation, sensor placement, facility location, bipartite matching. Subm
 
 ---
 
-## 논문의 좋은점
+## 6) Strengths — 논문의 좋은점
 
 기존 방식을 설명을 해주고 어떤 부분이 문제인지 어떻게 해결해야할지 설명해주는 것이 좋음.
 
 ---
 
-## 한계
+## 7) Limitations — 한계
 
 원래 LP는 해가 꼭짓점에 위치해서 미분이 어려움 → 그래서 목적함수에 이차항(quadratic term)을 추가해 QP로 변형. 이렇게 해도 QP 최적해는 여전히 KKT 조건을 통해 정의됨 → KKT 시스템을 직접 미분해야 gradient 추출 가능. KKT 조건은 연립방정식 + 보완성 조건 포함 → 수학적 처리와 구현이 어렵고 해석적으로 불안정할 수도 있음. 예측값 → decision → loss로 이어지는 과정이 간접적이고 해석 어려움.
 
 ---
 
-## 개선 아이디어
+## 8) Improvement Ideas — 개선 아이디어
 
 Interior 논문에 따르면, 기존 QPTL 방식은 KKT 조건 미분의 복잡성이라는 한계를 가지며, 이를 해결하기 위해 log-barrier 기반의 interior point solver 구조를 직접 활용하여 미분 가능한 학습 경로를 구성한다.
 
 ---
 
-## 정리
+## 9) Pipeline 정리 — 배경/문맥
 
 현실의 AI 응용의 목표 : data → predictive models → decision making으로 이루어지는 pipeline을 만드는 것. 이러한 step들이 결합되면 evidence-based decision이 가능하게 되고 현실의 분야에서 transformative potential을 가짐. 이 step에서 predictive models는 ML model, decision making은 optimization algorithm을 통해 이루어짐. ML model은 data로부터 unkown 값들을 예측하고, optimization algoritmn은 예측값을 사용해 어떤 목적함수를 최대화하는 decision을 내림.
 
@@ -81,7 +79,7 @@ Interior 논문에 따르면, 기존 QPTL 방식은 KKT 조건 미분의 복잡�
 
 ---
 
-## Problem Description (수식)
+## 10) Problem Description — 수식으로 표현
 
 다음 형태의 combinatorial decision problem를 고려함:
 
@@ -89,13 +87,9 @@ $$
 \max_{x \in \chi} f(x, \theta)
 $$
 
-여기서 \( \chi \)는 feasible decisions을 나타내는 discrete set임, 즉 모든 가능한 조합 중에서 \( f(x, \theta) \) 값을 최대로 만들어주는 결정 \( x \)를 찾는 문제. 이때 \( \theta \)는 알려지지 않은 값, parameter. decision을 내리는 사람은 \( \theta \)을 직접 알 수 없지만 그와 관련된 정보 \( y \in \Upsilon \). 따라서 optimization을 풀기 전에 learning problem(\( \theta \)을 예측하는 문제)을 먼저 풀어야함. \( y, \theta \)를 확률 분포 \( P \)로부터 샘플링 된 것이라고 가정. \( P \)에서 i.i.d 하게 샘플링된 \( (y_1,\theta_1), \ldots, (y_N,\theta_N) \). 알고리즘은 \( y \)를 이용해 예측된 파라미터 \( \hat\theta \) 생성, \( \hat\theta \)를 가지고
+여기서 \( \chi \)는 feasible decisions을 나타내는 discrete set임, 즉 모든 가능한 조합 중에서 \( f(x, \theta) \) 값을 최대로 만들어주는 결정 \( x \)를 찾는 문제. 이때 \( \theta \)는 알려지지 않은 값, parameter. decision을 내리는 사람은 \( \theta \)을 직접 알 수 없지만 그와 관련된 정보 \( y \in \Upsilon \). 따라서 optimization을 풀기 전에 learning problem(\( \theta \)을 예측하는 문제)을 먼저 풀어야함. \( y, \theta \)를 확률 분포 \( P \)로부터 샘플링 된 것이라고 가정. \( P \)에서 i.i.d 하게 샘플링된 \( (y_1,\theta_1), \ldots, (y_N,\theta_N) \).
 
-$$
-\max_{x \in \chi} f(x, \hat\theta)
-$$
-
-를 풀어 결정 \( x^* \)을 얻음. 이때 실제의 utility는 예측값 \( \hat\theta \)로 얻은 \( x^* \)이 실제에서의 성능 \( f(x^*, \theta) \) 임. \( m: \Upsilon \to \Theta \) 를 관측된 feature \( y \)를 파라미터 \( \theta \)로 매핑하는 모델이라고 할 때, 목표는 train data를 이용해 expected performance를 최대화하는 모델 \( m \)을 찾는 것.
+알고리즘은 \( y \)를 이용해 예측된 파라미터 \( \hat\theta \) 생성, \( \hat\theta \)를 가지고 \( \max_{x \in \chi} f(x, \hat\theta) \)를 풀어 결정 \( x^* \)을 얻음. 이때 실제의 utility는 예측값 \( \hat\theta \)로 얻은 \( x^* \)이 실제에서의 성능 \( f(x^*, \theta) \) 임. \( m: \Upsilon \to \Theta \) 를 관측된 feature \( y \)를 파라미터 \( \theta \)로 매핑하는 모델이라고 할 때, 목표는 train data를 이용해 expected performance를 최대화하는 모델 \( m \)을 찾는 것.
 
 정리하면  
 1) 실제 최적화 문제는 \( \max_{x \in \chi} f(x, \theta) \) 를 최대화하는 것  
@@ -105,36 +99,32 @@ $$
 5) 이때 최종 utility는 진짜 \( \theta \) 기준으로 평가됨  
 6) 그래서 학습할 때 단순히 \( \theta \)예측 정확도보다 좋은 결정을 만들어주는 예측을 목표로 학습해야 함
 
-목표 : combinatorial optimization을 gradient기반 학습 루프 안에 통합하는 것. 즉, 조합 최적화 문제를 딥러닝 학습 과정 안에 넣는 것. 예측 모델 \( m \)을 학습할 때 gradient descent를 수행해야함. 이때 모델 파라미터 \( \omega \)에 따라 예측된 \( \hat\theta = m(y, \omega) \) 가 바뀌고 그로부터 최적해 \( x^* \) 이 달라지므로 결국 gradient가 **argmax**에 의존하는 구조가 됨.
-
 ---
 
-## argmax의 2가지 문제와 완화
+## 11) Gradient through argmax — 연쇄법칙과 KKT
+
+목표 : combinatorial optimization을 gradient기반 학습 루프 안에 통합하는 것. 예측 모델 \( m \)을 학습할 때 gradient descent를 수행해야함. 이때 모델 파라미터 \( \omega \)에 따라 예측된 \( \hat\theta = m(y, \omega) \) 가 바뀌고 그로부터 최적해 \( x^* \) 이 달라지므로 결국 gradient가 **argmax**에 의존하는 구조가 됨.
 
 \( x^* \)는 binary set에서 나온 이산적인 값이므로 미분이 불가능, \( x^* \)가 연속이더라도 argmax 자체를 미분해야함 → 이를 풀기 위해 **continuous relaxation**을 사용. 이때 2번째 항을 미분하기위해 **KKT 조건** 활용.
-
-**(사진의 수식 추가)**
 
 연쇄법칙 형식:
 
 $$
 \frac{d f\big(x(\hat\theta), \theta\big)}{d\omega}
 \;=\;
-\frac{d f}{d x}
-\cdot
-\frac{d x}{d \hat\theta}
-\cdot
+\frac{d f}{d x}\cdot
+\frac{d x}{d \hat\theta}\cdot
 \frac{d \hat\theta}{d \omega}
 $$
 
-KKT에서 유도되는 블록 시스템(개념적 표기):
+KKT 블록 시스템(개념적):
 
 $$
 \begin{bmatrix}
 \nabla_x^2 f(x,\theta) & A^{\mathsf T} \\
 \operatorname{diag}(\lambda)\,A & \operatorname{diag}(Ax-b)
 \end{bmatrix}
-\cdot
+\!
 \begin{bmatrix}
 \dfrac{d x}{d \hat\theta} \\
 \dfrac{d \lambda}{d \hat\theta}
@@ -148,58 +138,44 @@ $$
 
 ---
 
-## Linear programming에 적용
+## 12) Linear programming에 적용
 
 다양한 조합 최적화 문제들인 shortest path, maximum flow, bipartite matching는 LP로 모델링 가능.
 
 표준 LP 형태(개념적):
 
 $$
-\max \;\; \theta^{\mathsf T} x
+\max \;\; \theta^{\mathsf T}x
 \quad \text{s.t.} \quad
-A x = b,\;\;
-G x \le h
+A x = b,\;\; Gx \le h
 $$
 
-하지만 LP의 최적해는 종종 **non-smooth**이기 때문에 미분이 어려움. LP의 해 \( x^*(\theta) \)는 예측된 파라미터 \( \theta \)의 작은 변화에도 **discontinuous**해짐. 이런 경우 위의 chain rule의 중간 항을 구할 수 없음. 따라서 objective에 정규화 항 \( -\,\gamma \lVert x\rVert^2 \)를 추가해서 문제를 **concave QP**로 바꿈. 이를 통해 해가 유일하고 연속적, 미분 가능해짐.
+하지만 LP의 최적해는 종종 **non-smooth**이기 때문에 미분이 어려움. LP의 해 \( x^*(\theta) \)는 예측된 파라미터 \( \theta \)의 작은 변화에도 **discontinuous**해짐. 이런 경우 위의 chain rule의 중간 항을 구할 수 없음. 따라서 objective에 정규화 항 \( -\,\gamma\lVert x\rVert^2 \)를 추가해서 문제를 **concave QP**로 바꿈. 이를 통해 해가 유일하고 연속적, 미분 가능해짐.
 
 정규화가 들어간 QP 형태:
 
 $$
-\max \;\; \theta^{\mathsf T} x \;-\; \gamma \lVert x\rVert^2
+\max \;\; \theta^{\mathsf T}x \;-\; \gamma\lVert x\rVert_2^2
 \quad \text{s.t.} \quad
-A x = b,\;\;
-G x \le h
+A x = b,\;\; Gx \le h
 $$
 
 ---
 
-## Submodular maximization에 적용
+## 13) Submodular maximization에 적용
 
-(본문 유지) Submodular maximization, Diverse recommendation.
+Submodular maximization, Diverse recommendation.
 
 ---
 
-## Experiments
+## 14) Experiments
 
-**Table 1: Solution quality of each method for the full data-decisions pipeline**  
-목적: 최종적인 의사결정(최적화 문제)에서 각 방법이 얼마나 좋은 해를 찾았는지를 비교.  
-포인트: NN1-Decision, NN2-Decision: 대부분의 경우에서 성능이 우수함. 특히 Budget Allocation에서는 NN1-Decision이 최고 성능. Two-stage 방법들 (NN1-2Stage, NN2-2Stage)**은 예측 모델 정확도는 높을 수 있어도 의사결정 품질은 낮음. Random이나 RF-2Stage는 baseline 역할.
+**Table 1: Solution quality of each method for the full data-decisions pipeline** — 목적: 최종적인 의사결정(최적화 문제)에서 각 방법이 얼마나 좋은 해를 찾았는지를 비교. 포인트: NN1-Decision, NN2-Decision: 대부분의 경우에서 성능이 우수함. 특히 Budget Allocation에서는 NN1-Decision이 최고 성능. Two-stage 방법들 (NN1-2Stage, NN2-2Stage)**은 예측 모델 정확도는 높을 수 있어도 의사결정 품질은 낮음. Random이나 RF-2Stage는 baseline 역할.
 
-**Table 2: Accuracy of each method according to standard measures**  
-목적: 예측 정확도 (MSE, CE, AUC 등)를 기준으로 각 모델을 평가.  
-포인트: Two-stage 방식(NN1-2Stage, NN2-2Stage)이 예측 정확도는 더 높음. 특히 Matching, Diverse Recommendation에서 CE (Cross Entropy), AUC 기준으로 Decision 방식보다 낫지만, Table 1과 대조하면 예측이 잘 된다고 해서 좋은 결정이 나오는 건 아님을 보여줌.
+**Table 2: Accuracy of each method according to standard measures** — 목적: 예측 정확도 (MSE, CE, AUC 등)를 기준으로 각 모델을 평가. 포인트: Two-stage 방식(NN1-2Stage, NN2-2Stage)이 예측 정확도는 더 높음. 특히 Matching, Diverse Recommendation에서 CE (Cross Entropy), AUC 기준으로 Decision 방식보다 낫지만, Table 1과 대조하면 예측이 잘 된다고 해서 좋은 결정이 나오는 건 아님을 보여줌.
 
-**Figure 1: Heatmaps**  
-목적: 예측된 \( \theta \) 행렬을 시각적으로 비교.  
-(a): 실제 ground truth  
-(b): NN1-2Stage의 예측  
-(c): NN1-Decision의 예측  
-포인트: (b)는 ground truth 구조를 따라가나, 실제 최적화에선 비효율적. (c)는 구조가 달라도 좋은 결정(최적화 목적)에 더 부합.
+**Figure 1: Heatmaps** — 목적: 예측된 \( \theta \)행렬을 시각적으로 비교. (a): 실제 ground truth. (b): NN1-2Stage의 예측. (c): NN1-Decision의 예측. 포인트: (b)는 ground truth 구조를 따라가나, 실제 최적화에선 비효율적. (c)는 구조가 달라도 좋은 결정(최적화 목적)에 더 부합.
 
-**Figure 2: Scatter plots**  
-목적: 각 아이템의 예측된 총 out-weight와 실제값의 상관관계 (정확도).  
-왼쪽: Decision 방식 (NN1-Decision) → \( r^2 = 0.94 \)  
-오른쪽: Two-stage 방식 (NN1-2Stage) → \( r^2 = 0.64 \)
+**Figure 2: Scatter plots** — 목적: 각 아이템의 예측된 총 out-weight와 실제값의 상관관계 (정확도). 왼쪽: Decision 방식 (NN1-Decision) → \( r^2 = 0.94 \). 오른쪽: Two-stage 방식 (NN1-2Stage) → \( r^2 = 0.64 \).
 
 ---
