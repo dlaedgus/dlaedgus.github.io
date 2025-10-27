@@ -5,7 +5,7 @@ categories: [paper_review, decision_focused_learning]
 tags: [decision-focused-learning, predict-then-optimize, combinatorial-optimization, aaai2019, submodular, lp, kkt, interior-point]
 math: true
 ---
-<img width="1533" height="1412" alt="image" src="https://github.com/user-attachments/assets/fc5d23ce-5459-4a67-8b61-2c8cf1594f06" />
+
 
 # Paper Review — *Melding the Data-Decisions Pipeline: Decision-Focused Learning for Combinatorial Optimization* (AAAI 2019)
 
