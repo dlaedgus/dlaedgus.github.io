@@ -47,33 +47,33 @@ math: true
 
 ---
 
-## 4) Formal Problem Description 
+## 4) Formal Problem Description
 
 다음 형태의 **조합적 의사결정 문제**를 고려합니다:
 
 $$
-\max_{x \in \chi} \; f(x,\theta)
+\max_{x \in \chi} f(x,\theta)
 $$
 
-- `χ`: feasible decisions의 **이산 집합**  
-- `θ`: **알 수 없는(unknown)** 파라미터  
-- 의사결정자는 `θ`를 직접 알 수 없으나 관련된 정보 `y \in \Upsilon`를 관측  
-- 따라서 최적화를 풀기 전에 **learning problem(θ 예측)**을 먼저 풀어야 합니다.
+- $\chi$: feasible decisions의 **이산 집합**  
+- $\theta$: **알 수 없는(unknown)** 파라미터  
+- 의사결정자는 $\theta$를 직접 알 수 없으나 관련된 정보 $y \in \Upsilon$를 관측  
+- 따라서 최적화를 풀기 전에 **learning problem($\theta$ 예측)**을 먼저 풀어야 합니다.
 
 데이터 생성 가정:  
-- `(y, \theta)`는 분포 `P`로부터 표본화  
-- 훈련 데이터: `\((y_1, \theta_1), \ldots, (y_N, \theta_N) \sim \text{i.i.d. } P\)`
+- $(y, \theta)$는 분포 $P$로부터 표본화  
+- 훈련 데이터: $(y_1, \theta_1), \ldots, (y_N, \theta_N) \sim \text{i.i.d. } P$
 
 모델:  
-- `m: \Upsilon \to \Theta`가 관측 feature `y`를 파라미터 추정치 `\theta`로 매핑  
-- 목표는 **expected performance**를 최대화하는 `m`을 찾는 것
+- $m: \Upsilon \to \Theta$ 가 관측 feature $y$를 파라미터 추정치 $\theta$로 매핑  
+- 목표는 **expected performance**를 최대화하는 $m$을 찾는 것
 
 핵심 정리:  
-1. 실제 최적화 문제는 `\(\max_{x \in \chi} f(x,\theta)\)`  
-2. `\theta`는 미지수이며 **대신** 관련된 `y`를 관측  
-3. `y`로부터 `\hat{\theta} = m(y)`를 예측  
-4. `\hat{\theta}`로 최적화 문제를 풀어 `x^*`를 얻음  
-5. 최종 utility는 **진짜 \(\theta\)** 기준 성능 `\(f(x^*, \theta)\)`  
+1. 실제 최적화 문제는 $\max_{x \in \chi} f(x,\theta)$  
+2. $\theta$는 미지수이며 **대신** 관련된 $y$를 관측  
+3. $y$로부터 $\hat{\theta} = m(y)$ 를 예측  
+4. $\hat{\theta}$ 로 최적화 문제를 풀어 $x^*$ 를 얻음  
+5. 최종 utility는 **진짜 $\theta$ 기준** 성능 $f(x^*, \theta)$  
 6. 따라서 학습 시 단순 예측 정확도보다 **좋은 결정을 만들어주는 예측**을 목표로 해야 함
 
 ---
@@ -81,24 +81,22 @@ $$
 ## 5) Making It Differentiable — 연속 이완과 KKT
 
 문제점:  
-- `argmax`는 이산/비매끄러워 **미분 불가**  
-- `x^*`가 binary set에서 나오거나, 연속이어도 `argmax` 자체를 미분해야 하는 이슈 발생
+- $\arg\max$ 는 이산/비매끄러워 **미분 불가**  
+- $x^*$ 가 binary set에서 나오거나, 연속이어도 $\arg\max$ 자체를 미분해야 하는 이슈 발생
 
 해결책:  
 - **Continuous relaxation**을 사용해 **미분 가능한 경로**를 만듭니다.  
-- 특히 **LP**의 경우, 해가 꼭짓점(vertex)에 위치해 **non-smooth** → 작은 `\theta` 변화에 `x^*`가 **불연속적**으로 변할 수 있어 chain rule의 중간항이 붕괴합니다.  
-- 이를 막기 위해 **정규화 항** `-\gamma \lVert x \rVert^2`를 추가하여 **concave QP**로 변환 → 해의 **유일성/연속성/미분가능성**을 확보합니다.  
+- 특히 **LP**의 경우, 해가 꼭짓점(vertex)에 위치해 **non-smooth** → 작은 $\theta$ 변화에 $x^*$ 가 **불연속적**으로 변할 수 있어 chain rule의 중간항이 붕괴합니다.  
+- 이를 막기 위해 **정규화 항** $-\gamma \lVert x \rVert^2$ 를 추가하여 **concave QP** 로 변환 → 해의 **유일성/연속성/미분가능성**을 확보합니다.  
 - 이후 **KKT 조건**을 활용해 **gradient**를 추출합니다.
 
 연쇄법칙(개념식):
 
 $$
-\frac{d\, f\big(x(\hat{\theta}), \theta\big)}{d\omega}
+\frac{d\, f\!\big(x(\hat{\theta}), \theta\big)}{d\omega}
 =
-\frac{d f}{dx}
-\cdot
-\frac{d x}{d \hat{\theta}}
-\cdot
+\frac{d f}{dx}\cdot
+\frac{d x}{d \hat{\theta}}\cdot
 \frac{d \hat{\theta}}{d \omega}
 $$
 
@@ -116,7 +114,7 @@ $$
 \end{bmatrix}
 =
 \begin{bmatrix}
-\dfrac{d}{d\hat{\theta}} \nabla_x f(x,\theta) \\
+\dfrac{d}{d\hat{\theta}}\, \nabla_x f(x,\theta) \\
 \mathbf{0}
 \end{bmatrix}
 $$
@@ -130,7 +128,7 @@ $$
 ### 6.1 Linear Programming (LP)
 - shortest path, maximum flow, bipartite matching 등 다양한 조합 최적화 문제가 **LP**로 모델링 가능  
 - 그러나 **LP 최적해의 non-smooth성** 때문에 직접 미분이 어렵습니다.  
-- **Quadratic term**(예: `-\gamma \lVert x \rVert^2`)을 목적함수에 추가해 **concave QP**로 바꾸고, **유일/연속 해**를 유도하여 **미분 경로**를 만듭니다.  
+- **Quadratic term**(예: $-\gamma \lVert x \rVert^2$)을 목적함수에 추가해 **concave QP**로 바꾸고, **유일/연속 해**를 유도하여 **미분 경로**를 만듭니다.  
 - 이후 **KKT 조건**을 통해 gradient를 계산합니다.
 
 ### 6.2 Submodular Maximization
@@ -153,15 +151,15 @@ $$
 - **Two-stage**가 **예측 정확도**(MSE, CE, AUC 등)에서는 더 좋게 나오는 경우가 많음  
 - 그러나 **Table 1**과 대조하면, **예측이 잘 되어도 좋은 결정으로 이어지지 않을 수 있음**을 명확히 보여줌
 
-### 7.3 Figure 1: Heatmaps — `\theta` 행렬 시각화 비교
+### 7.3 Figure 1: Heatmaps — $\theta$ 행렬 시각화 비교
 - (a) **Ground Truth**  
 - (b) **NN1-2Stage의 예측**: GT 구조는 잘 따르지만 **최적화 관점**에서는 비효율적일 수 있음  
 - (c) **NN1-Decision의 예측**: 구조가 달라도 **최적화 목적**에 더 부합하는 형태로 학습됨
 
 ### 7.4 Figure 2: Scatter Plots — 예측 총 out-weight vs 실제값 상관
-- **Decision 방식 (NN1-Decision)**: \( r^2 = 0.94 \)  
-- **Two-stage (NN1-2Stage)**: \( r^2 = 0.64 \)  
-→ **Decision-aware** 학습이 더 **안정적 구조**로 `\theta`를 예측
+- **Decision 방식 (NN1-Decision)**: $r^2 = 0.94$  
+- **Two-stage (NN1-2Stage)**: $r^2 = 0.64$  
+→ **Decision-aware** 학습이 더 **안정적 구조**로 $\theta$를 예측
 
 ---
 
@@ -223,19 +221,19 @@ $$
 
 ## 13) Integration into Gradient Loop — 학습 루프 내 통합의 기술적 포인트
 
-- 예측 모델 `m(y, \omega)`의 파라미터 `\omega`가 변하면 `\hat{\theta} = m(y, \omega)`가 변하고, 그에 따라 `x^*`도 변함  
-- 결국 **gradient가 argmax에 의존**하는 구조  
-- **문제 1:** `x^*`는 binary 등 **이산적** → **미분 불가**  
-- **문제 2:** 연속이더라도 **argmax 자체를 미분**해야 함  
+- 예측 모델 $m(y, \omega)$ 의 파라미터 $\omega$ 가 변하면 $\hat{\theta} = m(y, \omega)$ 가 변하고, 그에 따라 $x^*$ 도 변함  
+- 결국 **gradient가 $\arg\max$ 에 의존**하는 구조  
+- **문제 1:** $x^*$ 는 binary 등 **이산적** → **미분 불가**  
+- **문제 2:** 연속이더라도 **$\arg\max$ 자체를 미분**해야 함  
 - **해결:** **continuous relaxation** + **KKT 활용**으로 미분 경로 구성
 
 ---
 
 ## 14) LP Case — QP로의 변형과 안정화
 
-- 많은 조합 최적화 문제가 **LP**로 표현 가능  
-- 그러나 **LP 해의 non-smooth성** 때문에 작은 `\theta` 변화에 `x^*`가 **불연속** → chain rule 붕괴  
-- **정규화 항** `-\gamma \lVert x \rVert^2` 추가 → 목적을 **concave QP**로 변환  
+- 많은 조합 최적화 문제가 **LP** 로 표현 가능  
+- 그러나 **LP 해의 non-smooth성** 때문에 작은 $\theta$ 변화에 $x^*$ 가 **불연속** → chain rule 붕괴  
+- **정규화 항** $-\gamma \lVert x \rVert^2$ 추가 → 목적을 **concave QP** 로 변환  
 - 결과: 해가 **유일/연속/미분 가능**  
 - **단점:** 여전히 **KKT 시스템 미분**이 필요 → 구현/수치 난이도 ↑
 
@@ -243,10 +241,8 @@ $$
 
 ## 15) Submodular Case — Surrogate를 통한 미분 경로
 
-- **Submodular maximization**에 대해 **continuous surrogate**를 설계하여 **gradient-based 학습**과 **의사결정 품질**을 연결  
+- **Submodular maximization** 에 대해 **continuous surrogate** 를 설계하여  
+  **gradient-based 학습** 과 **의사결정 품질** 을 연결  
 - 대표 응용: **budget allocation**, **sensor placement**, **facility location**, **diverse recommendation** 등
-
----
-
 
 ---
