@@ -17,7 +17,7 @@ math: true
 
 ## 1) High-Level Summary (3–5 sentences)
 
-본 논문은 **predict-then-optimize** 문제에서 **연속 이완 + KKT 미분(QPTL)** 대신, **내부점법(interior point)**의 **동형 자기쌍대(Homogeneous Self-Dual; HSD)** 임베딩을 직접 **미분 가능한 레이어**로 사용하여 **end-to-end** 학습을 수행합니다. 핵심은 **log-barrier**를 쓰는 **LP** 해법의 **전진 패스(Forward)**와 동일한 구조를 **역전파(Backward)**에 재활용해 **∂x\*/∂c**를 안정적으로 계산하는 것입니다. 실험적으로, 단순한 문제(부동산 **knapsack**)에서는 **SPO**가 강하지만, **day-ahead 에너지 스케줄링**·**트위터 최단경로** 같은 어려운 세팅에서는 **IntOpt**가 **QPTL/SPO** 대비 **낮은 regret**을 보입니다.
+본 논문은 **predict-then-optimize** 문제에서 **연속 이완 + KKT 미분(QPTL)** 대신, **내부점법(interior point)**의 **동형 자기쌍대(Homogeneous Self-Dual; HSD)** 임베딩을 직접 **미분 가능한 레이어**로 사용하여 **end-to-end** 학습을 수행합니다. 핵심은 **log-barrier**를 쓰는 **LP** 해법의 **전진 패스(Forward)**와 동일한 구조를 **역전파(Backward)**에 재활용해 **$ \partial x^* / \partial c $**를 안정적으로 계산하는 것입니다. 실험적으로, 단순한 문제(부동산 **knapsack**)에서는 **SPO**가 강하지만, **day-ahead 에너지 스케줄링**·**트위터 최단경로** 같은 어려운 세팅에서는 **IntOpt**가 **QPTL/SPO** 대비 **낮은 regret**을 보입니다.
 
 ---
 
@@ -30,32 +30,34 @@ math: true
 ## 3) Proposed Solution — Interior-Point (HSD) 기반 End-to-End
 
 - **아이디어:** **MILP → LP 이완** 후, **log-barrier**를 포함한 **HSD 임베딩**을 사용하여 **LP 레이어**를 구성하고, 이를 **내부점법**으로 풉니다.  
-- **Forward:** 내부점법으로 **x\*(ĉ; A, b)** 계산.  
-- **Backward:** 동일한 **HSD 선형계**를 역으로 풀어 **∂x\*/∂ĉ** 계산 → **∂L/∂θ = (∂L/∂x\*)(∂x\*/∂ĉ)(∂ĉ/∂θ)**.  
-- **안정화:** **λ-cutoff(early stopping)**, **Tikhonov damping** 등 수치 안정화 기법 적용.
+- **Forward:** 내부점법으로 **$x^*(\hat c; A, b)$** 계산.  
+- **Backward:** 동일한 **HSD 선형계**를 역으로 풀어 **$ \partial x^* / \partial \hat c $** 계산 → **$ \partial L/\partial \theta = (\partial L/\partial x^*)(\partial x^*/\partial \hat c)(\partial \hat c/\partial \theta) $**.  
+- **안정화:** **$\lambda$-cutoff(early stopping)**, **Tikhonov damping** 등 수치 안정화 기법 적용.
 
 ---
 
 ## 4) Formal Problem — MILP 표준형 & 이완
 
 **표준형 MILP**
-\[
-\min_{x} \; c^\top x \quad 
-\text{s.t.}\; Ax=b,\; x\ge 0,\; \text{some } x_i \in \mathbb{Z}.
-\]
-여기서 \(x\in\mathbb{R}^k,\; c\in\mathbb{R}^k,\; A\in\mathbb{R}^{p\times k},\; b\in\mathbb{R}^{p}\) 입니다.  
-예측 모델 \(g(z;\theta)\)가 **계수** \(c\)를 예측(\(\hat c\))하고, 우리는 **regret**
-\[
-\operatorname{regret}(\hat c,c;A,b)=c^\top\!\big(x^\*(\hat c;A,b)-x^\*(c;A,b)\big)
-\]
-을 줄이도록 \(\theta\)를 학습합니다. **뒤 항 \(c^\top x^\*(c)\)는 상수**이므로, 학습 시 **\(c^\top x^\*(\hat c)\)** 최소화에 집중합니다. 이때 **MILP → LP**로 이완하여 **미분 경로**를 만듭니다.
+$$
+\min_x \; c^\top x 
+\quad \text{s.t. } Ax=b,\; x\ge 0,\; \text{some } x_i \in \mathbb{Z}.
+$$
+
+여기서 $x\in\mathbb{R}^k,\; c\in\mathbb{R}^k,\; A\in\mathbb{R}^{p\times k},\; b\in\mathbb{R}^{p}$ 입니다.  
+예측 모델 $g(z;\theta)$ 가 **계수** $c$를 예측($\hat c$)하고, 우리는 **regret**
+$$
+\operatorname{regret}(\hat c,c;A,b)
+= c^\top\!\big(x^*(\hat c;A,b)-x^*(c;A,b)\big)
+$$
+을 줄이도록 $\theta$를 학습합니다. **뒤 항 $c^\top x^*(c)$는 상수**이므로, 학습 시 **$c^\top x^*(\hat c)$** 최소화에 집중합니다. 이때 **MILP → LP**로 이완하여 **미분 경로**를 만듭니다.
 
 ---
 
 ## 5) 미분 가능 경로 — KKT 대신 **Log-Barrier + HSD**
 
 - **문제점:** LP 해는 꼭짓점에 놓여 **비매끄러움**(미분 불가/불연속).  
-- **QPTL(기존):** 목적에 \(-\gamma\|x\|^2\) 추가 → **concave QP**, KKT 미분.  
+- **QPTL(기존):** 목적에 $-\gamma\|x\|^2$ 추가 → **concave QP**, KKT 미분.  
 - **본 논문:** **KKT 직접 미분** 대신, **log-barrier**가 들어간 **HSD 임베딩**을 **그대로 미분**. 내부점법의 **탐색 방향**과 **필요한 gradient** 사이의 연결을 이용해, **quadratic 정규화 없이**도 안정적 미분을 수행합니다.
 
 ---
@@ -73,32 +75,36 @@ math: true
 
 **Forward (Interior-Point on HSD):**
 - **HSD 제약(개념):**
-  \[
-  Ax-b\tau=0,\quad A^\top y+t-c\tau=0,\quad -c^\top x+b^\top y-\kappa=0,
-  \]
-  \[
-  t=\lambda X^{-1}\mathbf e,\;\; \kappa=\lambda/\tau,\;\; x,t,\tau,\kappa\ge 0.
-  \]
-  \(\lambda\)를 점차 낮추며 **중심경로**를 따라가 **해**를 근사. 초기 **feasible** 필요 없이 항상 시작 가능.
+$$
+Ax-b\tau=0,\quad 
+A^\top y+t-c\tau=0,\quad 
+-c^\top x+b^\top y-\kappa=0,
+$$
+$$
+t=\lambda X^{-1}\mathbf e,\qquad 
+\kappa=\lambda/\tau,\qquad 
+x,t,\tau,\kappa\ge 0.
+$$
+$\lambda$를 점차 낮추며 **중심경로**를 따라가 **해**를 근사. 초기 **feasible** 필요 없이 항상 시작 가능.
 
 **Backward (Gradient via HSD Linear System):**
-- 동일한 **뉴턴 선형계**를 이용해 \(\partial x^\*/\partial \hat c\) 계산.  
-- 수치 이슈를 줄이기 위해 **Tikhonov damping**(\(M \leftarrow M+\alpha I\)) 사용.  
-- **λ-cutoff**를 조정해 불안정 구간 진입 전에 정지.
+- 동일한 **뉴턴 선형계**를 이용해 $ \partial x^*/\partial \hat c $ 계산.  
+- 수치 이슈를 줄이기 위해 **Tikhonov damping**($M \leftarrow M+\alpha I$) 사용.  
+- **$\lambda$-cutoff**를 조정해 불안정 구간 진입 전에 정지.
 
 ---
 
 ## 8) Algorithm 1 — End-to-end training of an LP (relaxed MILP)
 
-**Input** : \(A, b\), training data \(\mathcal D=\{(z_i, c_i)\}_{i=1}^n\)  
-1 **initialize** \(\theta\)  
+**Input** : $A, b$, training data $\mathcal D=\{(z_i, c_i)\}_{i=1}^n$  
+1 **initialize** $\theta$  
 2 **for** epochs **do**  
 3 &nbsp;&nbsp; **for** batches **do**  
-4 &nbsp;&nbsp;&nbsp;&nbsp; **sample** batch \((z, c)\sim \mathcal D\)  
-5 &nbsp;&nbsp;&nbsp;&nbsp; \(\hat c \leftarrow g(z;\theta)\)  
-6 &nbsp;&nbsp;&nbsp;&nbsp; \(x^\* \leftarrow\) **Neural LP layer Forward Pass** to compute \(x^\*(\hat c;A,b)\)  
-7 &nbsp;&nbsp;&nbsp;&nbsp; \(\partial x^\*/\partial \hat c \leftarrow\) **Neural LP layer Backward Pass**  
-8 &nbsp;&nbsp;&nbsp;&nbsp; **Compute** \(\partial L/\partial \theta = (\partial L/\partial x^\*) (\partial x^\*/\partial \hat c) (\partial \hat c/\partial \theta)\) and update \(\theta\)  
+4 &nbsp;&nbsp;&nbsp;&nbsp; **sample** batch $(z, c)\sim \mathcal D$  
+5 &nbsp;&nbsp;&nbsp;&nbsp; $\hat c \leftarrow g(z;\theta)$  
+6 &nbsp;&nbsp;&nbsp;&nbsp; $x^* \leftarrow$ **Neural LP layer Forward Pass** to compute $x^*(\hat c;A,b)$  
+7 &nbsp;&nbsp;&nbsp;&nbsp; $\partial x^*/\partial \hat c \leftarrow$ **Neural LP layer Backward Pass**  
+8 &nbsp;&nbsp;&nbsp;&nbsp; **Compute** $\partial L/\partial \theta = (\partial L/\partial x^*) (\partial x^*/\partial \hat c) (\partial \hat c/\partial \theta)$ and update $\theta$  
 9 &nbsp;&nbsp; **end**  
 10 **end**
 
@@ -107,29 +113,30 @@ math: true
 ## 9) Method Details — 핵심 식 모음(개념)
 
 **Chain Rule**
-\[
+$$
 \frac{\partial L}{\partial \theta}
-= \frac{\partial L}{\partial x^\*}\;
-  \frac{\partial x^\*}{\partial \hat c}\;
+= \frac{\partial L}{\partial x^*}\;
+  \frac{\partial x^*}{\partial \hat c}\;
   \frac{\partial \hat c}{\partial \theta},
 \qquad
-\text{(regret의 경우 } \partial L/\partial x^\*=c\text{)}.
-\]
+\text{(regret의 경우 } \partial L/\partial x^*=c\text{)}.
+$$
 
 **LP 이완의 Primal/Dual**
-\[
+$$
 \min_x c^\top x\;\text{s.t. }Ax=b,\;x\ge0
 \quad\Longleftrightarrow\quad
 \max_{y,t} b^\top y\;\text{s.t. }A^\top y+t=c,\;t\ge0.
-\]
+$$
 
 **KKT 미분(개념)과 Log-Barrier**
-\[
-\mathcal L(x,y;c)=c^\top x+y^\top(b-Ax),\;
-\partial_x\mathcal L=c-A^\top y,\; Ax-b=0.
-\]
+$$
+\mathcal L(x,y;c)=c^\top x+y^\top(b-Ax),
+\qquad
+\partial_x\mathcal L=c-A^\top y,\quad Ax-b=0.
+$$
 미분하면
-\[
+$$
 \begin{bmatrix}
 f_{cx}(c,x)\\[2pt] 0
 \end{bmatrix}
@@ -143,18 +150,21 @@ A & 0
 \partial y/\partial c
 \end{bmatrix}
 =0.
-\]
+$$
 비매끄러움을 피하려 **log-barrier** 도입:
-\[
+$$
 f(c,x)=c^\top x-\lambda\sum_{i=1}^k \ln x_i,\quad
 c-t-A^\top y=0,\;\; Ax-b=0,\;\; t=\lambda X^{-1}\mathbf e.
-\]
+$$
 
 **HSD 임베딩 (개념)**
-\[
-Ax-b\tau=0,\;\;A^\top y+t-c\tau=0,\;\;-c^\top x+b^\top y-\kappa=0,\;\;
-t=\lambda X^{-1}\mathbf e,\;\;\kappa=\lambda/\tau.
-\]
+$$
+Ax-b\tau=0,\qquad
+A^\top y+t-c\tau=0,\qquad
+-c^\top x+b^\top y-\kappa=0,\qquad
+t=\lambda X^{-1}\mathbf e,\quad
+\kappa=\lambda/\tau.
+$$
 
 ---
 
@@ -166,7 +176,7 @@ t=\lambda X^{-1}\mathbf e,\;\;\kappa=\lambda/\tau.
 
 ### 10.2 Energy-Cost Aware Day-Ahead Scheduling
 - **설정:** 시계열 전력요금 예측과 자원 제약을 함께 고려하는 스케줄링.  
-- **요지:** **IntOpt**가 **최저 regret**. **HSD+log-barrier** 변형이 가장 안정적이며, **λ-cutoff**가 너무 낮으면 수치 이슈.
+- **요지:** **IntOpt**가 **최저 regret**. **HSD+log-barrier** 변형이 가장 안정적이며, **$\lambda$-cutoff**가 너무 낮으면 수치 이슈.
 
 ### 10.3 Shortest Path on Twitter Ego Network
 - **설정:** 노드/엣지 특징으로 생성한 가중치를 예측 후 **최단경로** 의사결정.  
@@ -178,7 +188,7 @@ t=\lambda X^{-1}\mathbf e,\;\;\kappa=\lambda/\tau.
 
 1) **내부점법(HSD) 임베딩을 직접 미분**하는 **LP 레이어(IntOpt)** 제안  
 2) **log-barrier** 채택으로 **별도 QP 정규화 불필요**  
-3) **λ-cutoff, central-path 기반 종단** 등 실용적 안정화 절차 제시  
+3) **$\lambda$-cutoff, central-path 기반 종단** 등 실용적 안정화 절차 제시  
 4) **Knapsack / Day-Ahead / Shortest Path** 3과제에서 **QPTL/SPO**와 비교 평가 (과제 난이도에 따라 우열 교차)
 
 ---
@@ -204,7 +214,7 @@ t=\lambda X^{-1}\mathbf e,\;\;\kappa=\lambda/\tau.
 
 - **산업용 solver 통합**(e.g., Gurobi)으로 계산 시간/안정성 향상  
 - **LP relaxation 강화**(컷/강화) 적용으로 **MILP** 성능 개선  
-- **λ 스케줄/stop 규칙 자동화**(adaptive cutoff)와 **배치-공유 선형계 재활용**으로 역전파 비용 절감
+- **$\lambda$ 스케줄/stop 규칙 자동화**(adaptive cutoff)와 **배치-공유 선형계 재활용**으로 역전파 비용 절감
 
 ---
 
