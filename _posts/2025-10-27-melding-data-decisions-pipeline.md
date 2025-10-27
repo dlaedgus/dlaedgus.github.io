@@ -247,8 +247,7 @@ $$
 - 대표 응용: **budget allocation**, **sensor placement**, **facility location**, **diverse recommendation** 등
 
 ---
-<img width="1421" height="304" alt="image" src="https://github.com/user-attachments/assets/5a37f4e9-9fa7-4130-8b60-3e805ac5f606" />
-<img width="1221" height="238" alt="image" src="https://github.com/user-attachments/assets/3da4bd4e-a269-4099-a899-5a3364c2896d" />
+
 ---
 
 ## 16) Experiments — Table & Figures Summary
@@ -287,8 +286,10 @@ $$
 **목적:** 각 아이템의 예측된 총 out-weight와 실제값의 상관관계(정확도) 비교  
 
 - 왼쪽: Decision 방식 (NN1-Decision) → $r^2 = 0.94$  
-- 오른쪽: Two-stage 방식 (NN1-2Stage) → $r^2 = 0.64$  
+- 오른쪽: Two-stage 방식 (NN1-2Stage) → $r^2 = 0.64$
 
+<img width="1421" height="304" alt="image" src="https://github.com/user-attachments/assets/5a37f4e9-9fa7-4130-8b60-3e805ac5f606" />
+<img width="1221" height="238" alt="image" src="https://github.com/user-attachments/assets/3da4bd4e-a269-4099-a899-5a3364c2896d" />
 
 <img width="604" height="433" alt="image" src="https://github.com/user-attachments/assets/58ef464f-a12a-4bf5-bf4d-94e98ccd9eda" />
 <img width="609" height="279" alt="image" src="https://github.com/user-attachments/assets/24d744b7-943a-444e-be6e-93973e92b4f4" />
