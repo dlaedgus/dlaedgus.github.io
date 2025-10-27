@@ -3,6 +3,7 @@ title: "Melding the Data-Decisions Pipeline (AAAI 2019)"
 date: 2025-10-27 12:00:00 +0900
 categories: [paper_review, decision_focused_learning]
 tags: [decision-focused-learning, predict-then-optimize, combinatorial-optimization, aaai2019, submodular, lp, kkt, interior-point]
+math: true
 ---
 
 # Paper Review — *Melding the Data-Decisions Pipeline: Decision-Focused Learning for Combinatorial Optimization* (AAAI 2019)
@@ -50,7 +51,10 @@ tags: [decision-focused-learning, predict-then-optimize, combinatorial-optimizat
 
 다음 형태의 **조합적 의사결정 문제**를 고려합니다:
 
-max_{x ∈ χ} f(x, θ)
+$$
+\max_{x \in \chi} f(x, \theta)
+$$
+
 
 
 - `χ`: feasible decisions의 **이산 집합**  
