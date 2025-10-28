@@ -75,6 +75,8 @@ covariates $x$를 가진 개인은 model에 의해 유도된 decision을 통해 
 예: “운동을 하세요”라는 유도 행동에 대해, 그 행동이 얼마나 효과적일지를 신뢰 구간으로 추정.  
 이 uncertainty model은 **importance weighting** 기법을 사용해 입력 특성의 분포 변화 보정, 변화된 $p'$에 대해 CI를 정확히 추정하도록 학습.
 
+<img width="1127" height="534" alt="image" src="https://github.com/user-attachments/assets/a192951f-196f-439b-afc5-286b0172b846" />
+
 입력 data의 density $p(x)$는 그래프의 왼쪽에 집중, $y$는 $x$에 대해 $f'(x)$로 주어짐.
 
 (A) 결과 $y$를 더 좋게 만들고 싶은 User는 $x$에서 predictive 모델을 참고하여 어떻게 decision 내릴지 결정, 예측 모델 $f(x)$의 gradient를 따라 $x \to x'$로 이동 — “어떻게 해야 더 나은 결과를 얻을 수 있을까?” 모델을 통해 배움.
@@ -135,11 +137,41 @@ Predictive와 decision 간의 균형.
 **기대 향상치:** $\mu = \mathbb{E}_{y'\sim p(\,\cdot\mid x')}[y']$.  
 $\mu - y$가 **작거나 음수**일 경우 이를 **패널티**로 부여.
 
+$$
+\min_{f \in \mathcal{F}}
+\; \mathbb{E}_{p(x,y)} \!\left[ (\hat{y}-y)^2 \right]
+\;+\; \lambda \, \mathbb{E}_{p(x,y)} \!\left[ \hat{y}' - y \right],
+\qquad \text{where } \hat{y}' = f(x').
+$$
+
 이 식의 2가지 문제:  
 1) $f$가 overfit → 이를 해결하기 위해 **두 개의 분리된 모델** 사용.  
 2) 실제 응용에서 개인별로 결과가 **평균적으로만** 향상된다는 보장은 부족.
 
-기존 방식은 단순히 **기대값** 기준으로 improvement가 있는지 봤다면, 본 논문은 **일정 수준 이상의 개선이 이루어질 확률이 충분히 높은가?** 를 기준으로 판단. MSE를 최소화하면서 **개선 확률이 $\tau$보다 낮은 경우**에 **패널티** 부여. 이때 $y'$는 $x'$에 대한 결과이므로 확률을 직접 계산할 수 없음 → **확률 추정** 필요.
+기존 방식은 단순히 **기대값** 기준으로 improvement가 있는지 봤다면, 본 논문은 **일정 수준 이상의 개선이 이루어질 확률이 충분히 높은가?** 를 기준으로 판단. 
+
+$$
+\min_{f \in \mathcal{F}}
+\; \mathbb{E}_{p(x,y)} \!\left[ (\hat{y}-y)^2 \right]
+\;+\; \lambda \, \mathbb{E}_{p(x,y)} \!\Big[
+\mathbf{1}\!\left\{ \mathbb{P}\!\left[\, y' \ge y \,\right] < \tau \right\}
+\Big],
+\qquad y' \sim p(y \mid x').
+$$
+
+MSE를 최소화하면서 **개선 확률이 $\tau$보다 낮은 경우**에 **패널티** 부여. 이때 $y'$는 $x'$에 대한 결과이므로 확률을 직접 계산할 수 없음 → **확률 추정** 필요.
+
+$$
+\min_{f \in \mathcal{F}} \sum_{i=1}^{m} (\hat{y}_i - y_i)^2
+\;+\; \lambda\, R(g_{\tau}; \mathcal{S}),
+\qquad
+\text{where}\;\;
+R(g_{\tau}; \mathcal{S})
+= \sum_{i=1}^{m} \max\{0,\, y_i - \ell'_i\},
+\;\; \hat{y}_i = f(x_i).
+$$
+
+<img width="660" height="192" alt="image" src="https://github.com/user-attachments/assets/bdae2784-80c3-4bd1-8913-835dd244075f" />
 
 ---
 
@@ -148,15 +180,28 @@ $\mu - y$가 **작거나 음수**일 경우 이를 **패널티**로 부여.
 lookahead regularization은 미래를 내다보며 결정이 안전한지 판단하는 규제 항이므로 이때 쓰이는 **불확실성 추정**이 핵심 역할. 그런데 train data 분포 밖에 있는 $x'$에 대해서는 추정이 어려움.
 
 다행히, 주어진 $f$에 대해 $p'(x)$는 **Assumption 1**에 의해 알려져 있으며, **covariate transform**을 사용해 **샘플 집합 $S'$**를 만들 수 있음. $S'$에 대해 label이 없더라도 $g$를 추정하는 문제는 **covariate shift** 하에서 학습하는 문제가 됨. Covariate shift 하에서의 학습 방법은 많지만, **importance weighting**으로 요약 가능.
+$$
+\mathbb{E}_{p'(x,y)}[L(g)]
+= \int L(g)\,\mathrm{d}p'(x)\,\mathrm{d}p(y\mid x)
+= \int \frac{p'(x)}{p(x)}\,L(g)\,\mathrm{d}p(x)\,\mathrm{d}p(y\mid x)
+= \mathbb{E}_{p(x,y)}\!\big[w(x)\,L(g)\big],
+\quad \text{where } w(x)=\frac{p'(x)}{p(x)}.
+$$
 
 ---
 
 ## 10) Algorithm
 
-(개념적 단계 요약: User shift 생성 → Uncertainty/Propensity 추정 → Lookahead 패널티 계산 → 파라미터 업데이트)
+(개념적 단계 요약: User shift 생성 → Uncertainty/Propensity 추정 → Lookahead 패널티 계산 → 파라미터 업데이트)4
+
+<img width="1127" height="953" alt="image" src="https://github.com/user-attachments/assets/3a38d9bc-2aad-47e9-969f-b255b3f4e25c" />
+
 
 ---
 
 ## 11) Experiments
 
-(논문 본문의 실험: synthetic + real-world(wine, diabetes); 예측 정확도 유지하면서 decision 지표 개선)
+<img width="1018" height="345" alt="image" src="https://github.com/user-attachments/assets/176871d0-81f2-4469-a15b-3e07eb8fc532" />
+
+<img width="983" height="367" alt="image" src="https://github.com/user-attachments/assets/e1be5d69-e95c-4a7e-9009-8f28a41f570d" />
+
