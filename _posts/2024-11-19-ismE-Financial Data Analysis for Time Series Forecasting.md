@@ -86,14 +86,13 @@ $$
 D(i,j)=d(q_i,c_j)+\min\!\left\{\,D(i-1,j-1),\; D(i-1,j),\; D(i,j-1)\,\right\}
 $$
 
-
 이후, 행렬에서 이동 가능한 경로 중 거리 차이 합의 최소를 찾는 것이 DTW이다. 예시 그림은 아래와 같으며, 이를 알고리즘적으로 구현한 것이다.
 
 <img width="923" height="359" alt="image" src="https://github.com/user-attachments/assets/4236b030-1f3d-4370-9c5b-8ce3417a7962" />
 
-이 과정을 통해 후보 길이 $\ell$에 대하여 모든 $K$개의 대표 개형 중심 $p_k$와의 DTW 거리 $d(s_m, p_k)$을 구하고, 가장 작은 거리를 제공하는 $\ell_m^*$를 선택하고, $$ X_{t:t+\ell_m^*} $$을 패턴(segment)로 추출한다. 그 결과 패턴
+이 과정을 통해 후보 길이 $\ell$에 대하여 모든 $K$개의 대표 개형 중심 $p_k$와의 DTW 거리 $d(s_m, p_k)$을 구하고, 가장 작은 거리를 제공하는 $\ell_m^*$를 선택하고, $$X_{t:t+\ell_m^*}$$을 패턴(segment)로 추출한다. 그 결과 패턴
 $$
-s_m \;=\; X_{t:t+\ell_m^*} \;=\; \{\,p_k,\ \alpha_m,\ \beta_m,\ \mathrm{normalized}\_{s_m}\,\}
+s_m \;=\; X_{t:t+\ell_m^*} \;=\; \{\,p_k,\ \alpha_m,\ \beta_m,\ \mathrm{normalized}_{s_m}\,\}
 $$
 로 분해된다.
 
@@ -168,7 +167,7 @@ $$
 X_t\mid X_{t-1} \;=\; \sqrt{\alpha_t}\, X_{t-1} \;+\; \sqrt{1-\alpha_t}\, \mathcal{N}(0,\mathbf{I})
 $$
 이므로
-\[
+$$
 \begin{aligned}
 X_t\mid X_{t-2}
 &= \sqrt{\alpha_t}\,\big[\sqrt{\alpha_{t-1}}\,X_{t-2} + \sqrt{1-\alpha_{t-1}}\,\mathcal{N}(0,\mathbf{I})\big]
@@ -177,9 +176,9 @@ X_t\mid X_{t-2}
 + \big[\sqrt{\alpha_t(1-\alpha_{t-1})} + \sqrt{1-\alpha_t}\big]\mathcal{N}(0,\mathbf{I}) \\
 &= \sqrt{\alpha_t\alpha_{t-1}}\,X_{t-2}
 + \sqrt{1-\alpha_t\alpha_{t-1}}\,\mathcal{N}(0,\mathbf{I})
-\quad\text{[\,} \mathcal{N}(0,a)+\mathcal{N}(0,b)=\mathcal{N}(0,a+b) \text{\,]}.
+\quad\text{[\,}\mathcal{N}(0,a)+\mathcal{N}(0,b)=\mathcal{N}(0,a+b)\text{\,]}.
 \end{aligned}
-\]
+$$
 따라서
 $$
 X_t\mid X_0 \;=\; \sqrt{\bar\alpha_t}\,X_0 \;+\; \sqrt{1-\bar\alpha_t}\,\mathcal{N}(0,\mathbf{I})
@@ -187,17 +186,17 @@ $$
 [계속해서 확장하여 일반화하면]임을 알 수 있다.
 
 여기서 문제는 사전에 정의한 $q$로 도출된 사상 $X_t$의 분포는 사실상 **조건부 사상** $X_t\mid X_0$의 분포이며, 실현치 $x'_0 \sim X_0$에 종속적이다. 따라서, 조건부 사상 $X_{t-1}\mid X_t$의 분포는 알기 힘들다. 하지만 조건부 사상 $X_{t-1}\mid X_0$의 분포는 항상 알고 있기에, 조건부 사상 $X_{t-1}\mid(X_t, X_0)$의 분포 또한 알 수 있다. 위의 유도식에서 통해 $X_{t-1}\mid X_0,\ X_t\mid X_0,\ X_t\mid X_{t-1}$의 분포를 이용하여,
-\[
+$$
 X_{t-1}\mid(X_t, X_0)
 ~\propto~
 f(X_{t-1}\mid X_0)\cdot f(X_t\mid X_{t-1}, X_0)
 ~=~
 f(X_{t-1}\mid X_0)\cdot f(X_t\mid X_{t-1})
-\]
+$$
 [ $X_t\mid X_{t-1}$과 $X_0$은 독립 ] 임을 쓸 수 있다.
 
 따라서, 조건부 사상들이 따르는 가우시안 분포를 활용하여 계산하면, 이 또한 가우시안 분포를 따르며 **기댓값**은 아래와 같다.
-\[
+$$
 \begin{aligned}
 \mathbb{E}\big[X_{t-1}\mid(X_t, X_0)\big]
 &=
@@ -210,7 +209,7 @@ f(X_{t-1}\mid X_0)\cdot f(X_t\mid X_{t-1})
 X_t\mid X_0 - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\,\mathcal{N}(0,\mathbf{I})
 \right).
 \end{aligned}
-\]
+$$
 [ $X_t\mid X_0 = \sqrt{\bar\alpha_t}\, X_0 + \sqrt{1-\bar\alpha_t}\,\mathcal{N}(0,\mathbf{I})$ 이용 ]
 
 여기서, 뒤쪽 term 중에 $\sqrt{1-\bar\alpha_t}\,\mathcal{N}(0,\mathbf{I})$는 $X_t\mid X_0$ 분포에서 출발한 것으로 $X_0$의 분포와는 독립적으로 시점 1부터 $t$까지 가해진 노이즈 분포로 표현된다. 따라서, $\mathcal{N}(0,\mathbf{I})$의 실현치를 알면, 시점 $t$에서의 노이즈가 들어간 실현치인 $x'_t\mid x'_0=\sqrt{\bar\alpha_t}\,x'_0+\sqrt{1-\bar\alpha_t}\,\epsilon$로 직전 시점 $X_{t-1}$의 **MLE**를 알 수 있다. ($X_{t-1}$이 가우시안 분포를 따르므로, 기댓값이 MLE)
@@ -218,7 +217,6 @@ X_t\mid X_0 - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\,\mathcal{N}(0,\mathbf{I}
 결과적으로 DDPM의 모델 $\epsilon_\theta$은 아래의 Algorithm 1과 같이, 시점 $t$와 해당 시점에서 실현치 $x'_t\mid x'_0 = \sqrt{\bar\alpha_t}\,x'_0 + \sqrt{1-\bar\alpha_t}\,\epsilon$가 입력으로 들어가면, 해당 시점까지의 노이즈 $\epsilon$을 추론하도록 학습한다.
 
 <img width="764" height="354" alt="image" src="https://github.com/user-attachments/assets/fceb1a94-d6bf-4d0e-bf3e-94c8929810de" />
-
 
 **추론**의 경우, $T$시점에서의 실현치 $x'_T$부터 입력으로 들어가 추론된 노이즈 $\epsilon$을 사용한다. 직전 시점의 사상 $X_{T-1}\sim \mathcal{N}(\mathbb{E}[X_{T-1}\mid (x'_0, x'_T)], \sigma_t^2\mathbf{I})$에서 실현치 $x'_{T-1}$을 구하고, 이를 $x'_0$의 실현치를 도출할 때까지 반복한다. (이때, $\sigma_t$는 $\beta_t$처럼 사전에 정의된 각 시점별 사상의 분산으로 하이퍼파라미터이다). 이는 아래의 Algorithm 2에 나타나있다.
 
