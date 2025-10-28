@@ -153,6 +153,9 @@ $$
 ## 9) Decision Trees for Decision-Making
 
 본 논문에서는 predict-then-optimize framework 하에서 decision tree 활용  
+
+<img width="899" height="358" alt="image" src="https://github.com/user-attachments/assets/60dd3f02-45cf-4f8d-9147-f65202175d46" />
+
 두 개의 node와 그 사이에 두 개의 후보 도로가 있는 간단한 최단 경로 문제 가정  
 각각의 도로에는 알려지지 않은 간선 비용 $c_1, c_2$ 존재  
 간선 비용을 예측하기 위한 3개의 feature가 있다고 가정  
@@ -170,6 +173,9 @@ $$
 ---
 
 ## 10) 실험결과
+
+<img width="1134" height="459" alt="image" src="https://github.com/user-attachments/assets/cb652df3-544d-4fb3-8ec9-442fa0e8dfc2" />
+
 
 SPOTs는 매우 높은 품질의 decision을 내리면서도 CART보다 훨씬 간단한 구조 유지
 
@@ -231,4 +237,9 @@ SPO forests — SPO tree 를 여러 개 앙상블 하여 만듦
 ## 12) Experiments
 
 Noisy Shortest Path  
+
+<img width="1107" height="781" alt="image" src="https://github.com/user-attachments/assets/8eb888ae-0ba7-4e03-a39c-769893d3805b" />
+
 News Article Recommendation
+
+<img width="940" height="650" alt="image" src="https://github.com/user-attachments/assets/2e00e14d-edff-4cba-af07-a266bce5b2a5" />
