@@ -1,6 +1,6 @@
 ---
 title: "Decision Trees for Decision-Making under the Predict-then-Optimize Framework (ICML 2020)"
-date: 2025-10-28 12:00:00 +0900
+date: 2025-07-21 12:00:00 +0900
 categories: [paper_review, decision_focused_learning]
 tags: [predict-then-optimize, SPO-loss, decision-trees, SPO-tree, SPO-forest, decision-focused-learning, icml2020]
 math: true
