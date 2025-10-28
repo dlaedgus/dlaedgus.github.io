@@ -169,7 +169,7 @@ $$
 이므로
 
 $$
-\begin{aligned}
+begin{aligned}
 X_t\mid X_{t-2}
 &= \sqrt{\alpha_t}\,\big[\sqrt{\alpha_{t-1}}\,X_{t-2} + \sqrt{1-\alpha_{t-1}}\,\mathcal{N}(0,\mathbf{I})\big]
 + \sqrt{1-\alpha_t}\,\mathcal{N}(0,\mathbf{I}) \\
@@ -178,7 +178,7 @@ X_t\mid X_{t-2}
 &= \sqrt{\alpha_t\alpha_{t-1}}\,X_{t-2}
 + \sqrt{1-\alpha_t\alpha_{t-1}}\,\mathcal{N}(0,\mathbf{I})
 \quad\text{[\,}\mathcal{N}(0,a)+\mathcal{N}(0,b)=\mathcal{N}(0,a+b)\text{\,]}.
-\end{aligned}
+end{aligned}
 $$
 
 따라서
