@@ -14,55 +14,37 @@ math: true
 
 ---
 
-## High-Level Summary (3–5 sentences)
+## 1) High-Level Summary (3–5 sentences)
 
 본 논문은 prediction model이 실제 사용자 decision에 영향을 미치는 상황을 고려하여, 단순한 정확도(MSE)뿐 아니라 decision quality까지 함께 고려하는 machine learning framework를 제안. 이를 위해 lookahead regularization이라는 새로운 regularization 기법을 도입하여, 모델이 미래 decision의 결과를 미리 고려하여 더 나은 방향으로 학습되도록 유도. 이 방법은 기존 statistical learning의 틀 안에 그대로 포함되며, synthetic data와 real-world data (wine, diabetes)를 활용한 세 가지 experiment를 통해 그 성능을 입증. 예측 정확도를 크게 해치지 않으면서도 사용자의 decision improvement를 의미 있게 높일 수 있음을 보여줌.
 
 ---
 
-## 논문이 풀고자 하는 문제
+## 2) 논문이 풀고자 하는 문제
 
 기존의 supervised learning에서는 prediction accuracy만을 최적화하지만, 실제 환경에서는 그 prediction이 user decision에 영향을 미쳐 결과적으로 잘못된 decision을 초래할 수 있음. 이 논문은 prediction model이 사용자의 행동을 유도하는 상황에서 decision quality까지 고려하지 않으면 부적절하거나 위험한 결과가 나올 수 있다는 문제를 해결하고자 함.
 
 ---
 
-## 어떤 방법으로 이 문제를 해결
+## 3) 어떤 방법으로 이 문제를 해결
 
 Lookahead regularization: 예측 모델 학습 시, 단순히 MSE 최소화뿐 아니라 그 예측이 초래할 decision의 expected improvement를 함께 고려하는 새로운 loss를 도입. 이때 decision은 counterfactual outcome을 기반으로 가정되며, uncertainty-aware model $g$와 propensity model $h$을 활용하여 미래의 변화 방향을 구성. 학습 과정에서는 $x \to x'$로의 decision shift를 고려하여, 실제로 개선이 가능한 방향으로 예측이 이루어지도록 함.
 
 ---
 
-## application area
+## 4) application area
 
 의료 area, 마케팅 area, 정책 결정 지원 시스템
 
 ---
 
-## 기여(contribution)
+## 5) 기여(contribution)
 
 사용자 decision까지 고려하는 새로운 regularization 기법: lookahead regularization 제안. 이 방법이 기존 RMSE 기반 모델보다 decision improvement에 효과적임을 보이는 정량적 실험 분석 제공.
 
 ---
 
-## 논문의 좋은점
-
-기존 prediction accuracy 중심의 학습에서 벗어나, 실제 user decision까지 고려한 학습 구조 설계
-
----
-
-## 한계
-
-Uncertainty model $g$이나 propensity model $h$ 등 여러 보조 모델이 필요해 복잡도 및 모델링 비용이 큼.
-
----
-
-## 개선 아이디어
-
-이전 논문들에서 다루었던 deep neural network나 ML model과의 조합으로 확장성 확보.
-
----
-
-## 정리
+## 6) 정리
 
 ML model은 의료, 금융, 제조업 등 사람들의 삶에 큰 영향을 미치는 분야로 사용↑.  
 Model의 transparency의 요구 ↑ 로 인하여 model이 단순한 prediction을 넘어서 행동 변화까지 유도하는 dual role 가짐.  
@@ -105,7 +87,7 @@ covariates $x$를 가진 개인은 model에 의해 유도된 decision을 통해 
 
 ---
 
-## Method
+## 7) Method
 
 $x \in \mathcal{X} = \mathbb{R}^d$: 특성 vector(환자, 고객, 와인 빈티지).  
 $y \in \mathbb{R}$: label(결과의 품질, 클수록 좋은 결과).
@@ -142,7 +124,7 @@ $$
 
 ---
 
-### Learning objective
+### 8) Learning objective
 
 Predictive와 decision 간의 균형.  
 학습 결과 생성되는 model이 $x\sim p(x)$로부터 온 입력에 대해 예측값 $y = f(x)$가 실제 정답 $y$와 매우 잘 일치하기를 원함 **+** 학습된 model이 파생된 decision $x'$을 유도하되 이 $x'$이 속하는 **counterfactual 분포** $p'(x)$에서의 결과 $y'$가 원래 결과 $y$보다 향상되길 원함.
@@ -161,7 +143,7 @@ $\mu - y$가 **작거나 음수**일 경우 이를 **패널티**로 부여.
 
 ---
 
-### Estimating uncertainty
+### 9) Estimating uncertainty
 
 lookahead regularization은 미래를 내다보며 결정이 안전한지 판단하는 규제 항이므로 이때 쓰이는 **불확실성 추정**이 핵심 역할. 그런데 train data 분포 밖에 있는 $x'$에 대해서는 추정이 어려움.
 
@@ -169,12 +151,12 @@ lookahead regularization은 미래를 내다보며 결정이 안전한지 판단
 
 ---
 
-## Algorithm
+## 10) Algorithm
 
 (개념적 단계 요약: User shift 생성 → Uncertainty/Propensity 추정 → Lookahead 패널티 계산 → 파라미터 업데이트)
 
 ---
 
-## Experiments
+## 11) Experiments
 
 (논문 본문의 실험: synthetic + real-world(wine, diabetes); 예측 정확도 유지하면서 decision 지표 개선)
