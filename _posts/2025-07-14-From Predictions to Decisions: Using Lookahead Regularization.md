@@ -1,6 +1,6 @@
 ---
 title: "From Predictions to Decisions: Using Lookahead Regularization (NeurIPS 2020)"
-date: 2025-07-02 12:00:00 +0900
+date: 2025-07-14 12:00:00 +0900
 categories: [paper_review, decision_focused_learning]
 tags: [lookahead-regularization, predict-then-optimize, decision-quality, uncertainty, covariate-shift, neurips2020]
 math: true
