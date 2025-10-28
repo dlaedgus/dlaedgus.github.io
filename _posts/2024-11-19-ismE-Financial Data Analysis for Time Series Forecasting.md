@@ -167,6 +167,7 @@ $$
 X_t\mid X_{t-1} \;=\; \sqrt{\alpha_t}\, X_{t-1} \;+\; \sqrt{1-\alpha_t}\, \mathcal{N}(0,\mathbf{I})
 $$
 이므로
+
 $$
 \begin{aligned}
 X_t\mid X_{t-2}
@@ -179,10 +180,13 @@ X_t\mid X_{t-2}
 \quad\text{[\,}\mathcal{N}(0,a)+\mathcal{N}(0,b)=\mathcal{N}(0,a+b)\text{\,]}.
 \end{aligned}
 $$
+
 따라서
+
 $$
 X_t\mid X_0 \;=\; \sqrt{\bar\alpha_t}\,X_0 \;+\; \sqrt{1-\bar\alpha_t}\,\mathcal{N}(0,\mathbf{I})
 $$
+
 [계속해서 확장하여 일반화하면]임을 알 수 있다.
 
 여기서 문제는 사전에 정의한 $q$로 도출된 사상 $X_t$의 분포는 사실상 **조건부 사상** $X_t\mid X_0$의 분포이며, 실현치 $x'_0 \sim X_0$에 종속적이다. 따라서, 조건부 사상 $X_{t-1}\mid X_t$의 분포는 알기 힘들다. 하지만 조건부 사상 $X_{t-1}\mid X_0$의 분포는 항상 알고 있기에, 조건부 사상 $X_{t-1}\mid(X_t, X_0)$의 분포 또한 알 수 있다. 위의 유도식에서 통해 $X_{t-1}\mid X_0,\ X_t\mid X_0,\ X_t\mid X_{t-1}$의 분포를 이용하여,
