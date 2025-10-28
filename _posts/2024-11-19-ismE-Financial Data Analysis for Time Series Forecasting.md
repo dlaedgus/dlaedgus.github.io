@@ -91,7 +91,7 @@ $$
 
 <img width="923" height="359" alt="image" src="https://github.com/user-attachments/assets/4236b030-1f3d-4370-9c5b-8ce3417a7962" />
 
-이 과정을 통해 후보 길이 $\ell$에 대하여 모든 $K$개의 대표 개형 중심 $p_k$와의 DTW 거리 $d(s_m, p_k)$을 구하고, 가장 작은 거리를 제공하는 $\ell_m^*$를 선택하고, $X_{t:t+\ell_m^*}$을 패턴(segment)로 추출한다. 그 결과 패턴
+이 과정을 통해 후보 길이 $\ell$에 대하여 모든 $K$개의 대표 개형 중심 $p_k$와의 DTW 거리 $d(s_m, p_k)$을 구하고, 가장 작은 거리를 제공하는 $\ell_m^*$를 선택하고, $$ X_{t:t+\ell_m^*} $$을 패턴(segment)로 추출한다. 그 결과 패턴
 $$
 s_m \;=\; X_{t:t+\ell_m^*} \;=\; \{\,p_k,\ \alpha_m,\ \beta_m,\ \mathrm{normalized}\_{s_m}\,\}
 $$
