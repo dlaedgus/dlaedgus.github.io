@@ -229,6 +229,7 @@ X_t\mid X_0 - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\,\mathcal{N}(0,\mathbf{I}
 ## Pattern Evolution Module
 
 다시, 본 논문으로 돌아오자. Pattern Generation Module은 결국 좋은 생성형 모형을 사용하면서, scale invariance 특성을 고려하여 패턴의 개형 분포를 추정하도록 했다. 이제 는 이러한 패턴들을 연속적인 과정을 모델링해야 한다. 여기선 irregularity의 특성을 고려하여, 금융 데이터의 각 패턴 개형이 갑작스럽게 등장하는 현실을 반영해야한다. 현실 세계에서 패턴은 다양한 요인에 종속적으로 결정되지만, 제안 방법론은 직후 패턴이 직전 패턴과만 종속적인 관계를 갖는다고 가정한다. 결국 모든 직후 패턴은 직전 패턴 정보인 $\{p,\alpha,\beta\}$가 주어질 때, 실현될 이산 확률을 추론할 수 있다는 것이다. 이를 아래와 같이 직전 패턴의 인덱스 $m$에 대하여 직후 패턴의 인덱스 $m+1$를 활용하여 수식으로 나타냈다.
+
 $$
 (\hat{p}_{m+1},\, \hat{\alpha}_{m+1},\, \hat{\beta}_{m+1})
 = \phi(p_m,\, \alpha_m,\, \beta_m).
