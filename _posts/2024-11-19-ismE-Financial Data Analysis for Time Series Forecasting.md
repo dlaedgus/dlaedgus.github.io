@@ -1,4 +1,4 @@
-<img width="1008" height="296" alt="image" src="https://github.com/user-attachments/assets/9f818c8f-ee81-4cc2-ba59-b883d47f4fd5" /><img width="1008" height="296" alt="image" src="https://github.com/user-attachments/assets/59f59b16-21bc-4d4f-9599-9305957206aa" />---
+---
 title: "Financial Data Analysis for Time Series Forecasting"
 date: 2024-11-19 12:00:00 +0900
 categories: [iSME, seminar]
