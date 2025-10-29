@@ -239,15 +239,16 @@ $$
 $$
 
 또한 $p$의 경우 학습 데이터에 있는 패턴 중 하나로 분류하는 관점으로 보고, $\alpha$와 $\beta$는 각각의 scale을 회귀하는 관점으로 접근하여, “개구리 점프 모델”의 각 사상이 다음 사상으로 점프할 확률을 추정하는 $\phi$를 학습하기 위한 손실함수를 아래와 같이 설계하였다.
+
 $$
-\mathcal{L}(\phi)
-=
-\mathbb{E}_{x_m}\!\left[
-\ell_{\mathrm{CE}}\!\left(p_{m+1},\, \hat{p}_{m+1}\right)
-+ \left\|\alpha_{m+1}-\hat{\alpha}_{m+1}\right\|_2^{2}
-+ \left\|\beta_{m+1}-\hat{\beta}_{m+1}\right\|_2^{2}
-\right].
+\mathcal{L}(\phi)=
+\mathbb{E}_{x_m}\!\Big[
+\ell_{\mathrm{CE}}\!\big(p_{m+1},\,\hat{p}_{m+1}\big)
++ \big\lVert \alpha_{m+1}-\hat{\alpha}_{m+1}\big\rVert_2^{\,2}
++ \big\lVert \beta_{m+1}-\hat{\beta}_{m+1}\big\rVert_2^{\,2}
+\Big].
 $$
+
 
 ---
 
