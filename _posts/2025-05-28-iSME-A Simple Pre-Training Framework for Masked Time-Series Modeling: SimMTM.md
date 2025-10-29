@@ -24,7 +24,6 @@ permalink: /notes/isme/simmtm/
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/90827e89-3a06-41dd-b1e9-a402104ce9b5" />
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/548525fa-13b7-447d-966b-bfcc67524ff3" />
 
-
 # SimMTM: 시계열 마스킹 기반 사전학습
 
 ## 1) 문제의식 & 동기
@@ -70,12 +69,13 @@ d_s:\ \text{series-wise 임베딩 차원},\quad
 M:\ \text{마스킹 버전 수}.
 $$
 
+마스킹 데이터 집합:
+
 $$
-\text{마스킹 데이터 집합:}\quad
-\{\bar{x}_{ij}\}_{j=1}^{M}\ \text{는 시계열 } x_i \text{의 } M \text{개 마스킹 버전}.
+\big\{\bar{x}_{ij}\big\}_{j=1}^{M}\ \text{는 시계열 } x_i \text{의 } M \text{개 마스킹 버전}.
 $$
 
-인코더 \(f_\theta\), 프로젝터 \(g\), 디코더 \(d\):
+인코더 \(f_\theta\), 프로젝터 \(g\), 디코더 \(d\) 정의:
 
 $$
 z_i[t] \;=\; f_\theta(x_i)[t]\ \in \mathbb{R}^D, 
@@ -100,12 +100,10 @@ R_{a,b}
 =\frac{\langle s_a,\, s_b\rangle}{\|s_a\|\,\|s_b\|}.
 $$
 
-전체 \(N(M{+}1)\)개 series-wise 표현으로 유사도 행렬 \(R\in\mathbb{R}^{N(M+1)\times N(M+1)}\) 구성.
-
 온도(temperature):
 
 $$
-\tau\ >\ 0.
+\tau\;>\;0.
 $$
 
 복원 대상 \(\bar{x}_{ij}\)의 이웃 가중치(softmax 정규화):
@@ -124,8 +122,12 @@ $$
 
 $$
 \hat{z}_{ij}[t]
-=\sum_{k}\alpha_{ij\to k}\; z_{k}[t],
-\qquad
+=\sum_{k}\alpha_{ij\to k}\; z_{k}[t].
+$$
+
+전체 길이 스택:
+
+$$
 \hat{Z}_{ij}
 =\mathrm{stack}\!\big(\hat{z}_{ij}[1{:}L]\big)\ \in \mathbb{R}^{L\times D}.
 $$
@@ -168,7 +170,7 @@ $$
 최종 목적함수(가중치 \(\lambda\)):
 
 $$
-\min_{\Theta}\;\mathcal{L}
+\min_{\Theta}\ \mathcal{L}
 =\mathcal{L}_{\mathrm{rec}}+\lambda\,\mathcal{L}_{\mathrm{con}},
 \qquad
 \Theta=\{\theta,\, g,\, d\}.
@@ -176,7 +178,7 @@ $$
 
 ---
 
-## 8) 단계별 파이프라인
+## 8) 단계별 파이프라인 
 
 1. **Masking**: 각 \(x_i\)에서 무작위 마스킹 \(M\)개 생성 → \(\{\bar{x}_{ij}\}\)  
 2. **Encoding/Projection**: \(f_\theta\)로 point-wise, \(g\)로 series-wise 임베딩 산출  
@@ -186,10 +188,13 @@ $$
 
 ---
 
-## 9) 실험 결과 
+## 9) 실험 결과
 
 - **In-Domain & Cross-Domain** 모두에서 SimMTM이 **최상위 성능**.  
-  목표: \( \text{MSE} \downarrow \), \( \text{Accuracy} \uparrow \).
+  목표: 
+  $$
+  \text{MSE}\ \downarrow,\qquad \text{Accuracy}\ \uparrow.
+  $$
 - **마스킹 비율 변화**에 강건.  
   contrastive 기반은 비율↑ 시 구조 손실로 급락, SimMTM은 **성능 유지**.
 - **저데이터 파인튜닝**에서도 우수.  
@@ -199,11 +204,9 @@ $$
 
 ---
 
-## 10) 왜 잘 작동하나?
+## 10) 왜 잘 작동하나? 
 
 - 단일 시계열 복원 방식의 **국소성 한계**를, **series-wise 유사도**로 찾은 **구조 이웃의 앙상블**로 보완.  
 - 복원(값 일치)과 표현(구조 정돈)을 **동시에** 최적화 → Downstream에 유리.  
 - “**manifold에서의 복원**” 관점 → **흐름/전환점**까지 보존.
-
----
 
