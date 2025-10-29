@@ -25,170 +25,151 @@ permalink: /notes/isme/simmtm/
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/548525fa-13b7-447d-966b-bfcc67524ff3" />
 
 
+# SimMTM: 시계열 마스킹 기반 사전학습
 
-# SimMTM — 시계열 마스킹 기반 사전학습
+## 1) 문제의식 & 동기
 
-> 발표 대본 내용을 그대로 살리되, 논문 정리 형식 + 수식 보강.
-
----
-
-## 1) 배경 & 문제의식
-- contrastive는 시간적 연속/구조 반영이 약해 복원·표현 품질 한계.
-- 무작위 마스킹 후 **단일 시계열**만 보고 복원 → 전역 맥락 상실, 오프셋/왜곡.
-- 핵심은 **변화의 패턴**. 전환점 가려지면 단일 복원으로는 맥락 회복이 어려움.
-- **SimMTM(NeurIPS 2023)**: 단순하지만 효과적인 self-supervised 프레임워크.
+contrastive learning은 시계열의 **시간적 연속성**과 **구조적 정보**를 충분히 반영하지 못해, 복원 성능과 표현 학습에서 한계를 자주 보인다. 무작위 마스킹 후 **단일 시계열만**으로 복원하면 **국소 정보**에 과적합되어 전체 흐름(temporal variation)과 **구조 전환점**을 놓친다.  
+이를 해결하기 위해 **SimMTM**(NeurIPS 2023)은 **여러 마스킹 시계열을 함께 활용**해 **구조적으로 유사한 이웃**들의 정보를 가중 평균으로 끌어와 복원한다. 핵심은 값 자체보다 **시계열이 공유하는 잠재 구조(Manifold)** 를 학습·활용한다는 점.
 
 ---
 
-## 2) 핵심 아이디어 — Multiple Masked Modeling
-- 대상 + **여러 마스킹 시계열**을 함께 사용.
-- **series-wise** 유사도로 이웃을 고르고, **point-wise** 표현을 **softmax 가중합**해 복원.
-- 수치보다 **공유된 저차원 manifold** 구조를 학습·활용.
+## 2) Manifold 가정
+
+- 시계열들은 고차원에 랜덤하게 흩어진 게 아니라, **구조를 가진 저차원 manifold 위**에 존재.  
+- 원본 시계열(파란 점) → 일부 마스킹(빨간 점)으로 **manifold에서 이탈**.  
+- 단일 시계열 복원은 이 왜곡된 지점에서 **오류 누적**.  
+- **여러 시계열의 부분 정보를 결합**하면 manifold 위의 **정합된 위치**로 복원 가능.
 
 ---
 
-## 3) Manifold 가정
-- 시계열은 고차원 공간에 무작위가 아니라 **구조적 저차원 manifold** 위에 존재.
-- 마스킹 → 정보 손실로 manifold에서 이탈.
-- 여러 이웃의 정보를 가중 결합해 manifold 근방으로 **복원**.
+## 3) 전체 프레임워크 개요
+
+SimMTM은 마스킹된 시계열을 복원하기 위해 **두 수준의 표현**을 학습한다.
+
+1) **Point-wise representation**: 시점별 임베딩(로컬 패턴)  
+2) **Series-wise representation**: 전체 시계열 임베딩(글로벌 구조)
+
+흐름은 다음과 같다.
+
+1. 여러 마스킹 버전 생성  
+2. 인코더(예: CNN)로 point-wise 임베딩 → 프로젝터(MLP)로 series-wise 임베딩  
+3. series-wise **유사도 행렬**로 **구조 이웃**을 찾고, 이를 이용해 **point-wise 가중 평균 복원**  
+4. 디코더(MLP)로 최종 시계열 복원  
+5. **복원 손실 + 제약 손실(InfoNCE 스타일)** 로 joint 학습
 
 ---
 
-## 4) 파이프라인 요약
-1. **마스킹**: 각 시계열에서 서로 다른 구간을 가린 **M개 버전** 생성.  
-2. **표현**: Encoder → **point-wise** \(z\), Projector → **series-wise** \(s\).  
-3. **유사도 행렬** \(R\): 모든 \(s\) 쌍 코사인 유사도.  
-4. **가중 집계 복원**: 이웃 point-wise를 softmax 가중합 → \(\hat{z}\) → Decoder → \(\hat{x}\).  
-5. **학습**: \(\mathcal{L}_{\mathrm{rec}}+\lambda \mathcal{L}_{\mathrm{con}}\) 최소화.
+## 4) 데이터/표기 설정
+
+- 시계열 개수: \(N\), 길이: \(L\), point 임베딩 차원: \(D\)  
+- 각 시계열 \(x_i\)에 대해 **서로 다른 마스킹** \(M\)개 생성: \(\{\bar{x}_{ij}\}_{j=1}^{M}\)  
+- 인코더 \(f_\theta\), 프로젝터 \(g\), 디코더 \(d\)
+
+**Point-wise/Series-wise 표현**
+- \(z_i[t] = f_\theta(x_i)[t] \in \mathbb{R}^D\)  
+- \(s_i = g\!\big(f_\theta(x_i)\big) \in \mathbb{R}^{d_s}\)  
+- \(\bar{z}_{ij}[t] = f_\theta(\bar{x}_{ij})[t]\), \(\; \bar{s}_{ij} = g\!\big(f_\theta(\bar{x}_{ij})\big)\)
 
 ---
 
-## 5) 단계별 디테일
+## 5) 유사도 행렬과 이웃 가중치
 
-### 5.1 마스킹(입력 확장)
-배치 $$ \(\{x_i\}_{i=1}^{N},\ x_i\in\mathbb{R}^{L\times C}\).$$
-각 \(x_i\)에서 서로 다른 구간을 가리는 **M개** 마스크 생성:
+모든 series-wise 벡터 쌍의 **코사인 유사도**:
 $$
-\{x_i^{\,j}\}_{j=1}^{M}=\mathrm{Mask}_r(x_i),
+R_{a,b}
+=\frac{\langle s_a,\, s_b\rangle}{\|s_a\|\,\|s_b\|}.
+$$
+
+전체 \(N(M{+}1)\)개 series-wise 표현으로 **유사도 행렬** \(R\in\mathbb{R}^{N(M+1)\times N(M+1)}\) 구성.  
+복원 대상 \(\bar{x}_{ij}\)의 이웃 가중치는 softmax로 산출:
+$$
+\alpha_{ij\to k}
+=\frac{\exp\!\big(R_{\bar{s}_{ij},\, s_k}/\tau\big)}
+{\sum_{\ell}\exp\!\big(R_{\bar{s}_{ij},\, s_\ell}/\tau\big)},
+$$
+여기서 \(\tau\)는 temperature.
+
+---
+
+## 6) Point-wise 가중 평균 복원 → 최종 복원
+
+각 시점 \(t\)에서 이웃들의 point-wise 임베딩을 가중합:
+$$
+\hat{z}_{ij}[t]
+=\sum_{k}\alpha_{ij\to k}\; z_{k}[t],
 \qquad
-X=\bigcup_{i=1}^{N}\Big(\{x_i\}\cup\{x_i^{\,j}\}_{j=1}^{M}\Big).
+\hat{Z}_{ij}
+=\mathrm{stack}\!\big(\hat{z}_{ij}[1{:}L]\big).
 $$
 
-### 5.2 인코더/프로젝터(표현)
+디코더를 통해 **최종 시계열 복원**:
 $$
-Z=\mathrm{Enc}(X)\in\mathbb{R}^{L\times d},
-\qquad
-S=\mathrm{Proj}(Z)\in\mathbb{R}^{d}.
-$$
-
-### 5.3 시리즈 간 유사도 행렬 \(R\)
-$$
-R_{u,v}=\frac{u^\top v}{\lVert u\rVert\,\lVert v\rVert},
-\qquad
-R\in\mathbb{R}^{D\times D},\ \ D=N(M+1).
-$$
-
-### 5.4 시점별 가중 집계(핵심 복원)
-복원 대상 $$\(x_i\)$$의 시점 $$\(t\)$$:
-$$
-\hat{z}_i(t)
-=\sum_{k\neq i}
-\underbrace{\frac{\exp\!\big(R_{s_i,s_k}/\tau\big)}
-{\sum\limits_{v\neq i}\exp\!\big(R_{s_i,s_v}/\tau\big)}}_{\text{softmax 가중치}}
-\, z_k(t),
-\qquad
-\hat{Z}_i=[\hat{z}_i(1),\dots,\hat{z}_i(L)].
-$$
-Decoder로 최종 복원:
-$$
-\hat{x}_i=\mathrm{Dec}(\hat{Z}_i).
+\hat{x}_{ij}=d\!\big(\hat{Z}_{ij}\big).
 $$
 
 ---
 
-## 6) 학습 목표(손실)
+## 7) 학습 목표: Reconstruction + Constraint
 
-### 6.1 Reconstruction Loss
+**Reconstruction Loss** — 원본과 복원 간 L2 제곱 손실의 평균:
 $$
-\mathcal{L}_{\mathrm{rec}}=\sum_{i=1}^{N}\big\lVert \hat{x}_i-x_i\big\rVert_2^2.
+\mathcal{L}_{\mathrm{rec}}
+=\frac{1}{N}\sum_{i=1}^{N}\frac{1}{M}\sum_{j=1}^{M}
+\big\|x_i-\hat{x}_{ij}\big\|_2^2.
 $$
 
-### 6.2 Constraint(Contrastive) Loss
-- positive: 같은 시계열(원본–마스크)  
-- negative: 다른 시계열(및 그 마스크)
+**Constraint Loss (InfoNCE-style)** — 같은 시계열의 표현은 가깝게, 다른 시계열은 멀게:
 $$
 \mathcal{L}_{\mathrm{con}}
-=-\sum_{s\in S}\ \sum_{s^{+}\in S_i^{+}}
-\log\frac{\exp\!\big(R_{s,s^{+}}/\tau\big)}
-{\sum\limits_{s'\in S\setminus\{s\}}\exp\!\big(R_{s,s'}/\tau\big)}.
+=-\sum_{s\in S}
+\sum_{s'\in S^{+}(s)}
+\log
+\frac{\exp\!\big(R_{s,s'}/\tau\big)}
+{\sum_{u\in S\setminus\{s\}}\exp\!\big(R_{s,u}/\tau\big)}.
 $$
 
-### 6.3 최종 목적함수
+- \(S\): 전체 series-wise 표현 집합(원본+마스크)  
+- \(S^{+}(s)\): 같은 원본에서 나온 positive set
+
+**최종 목적함수**
 $$
-\min_{\Theta}\ \ \mathcal{L}_{\mathrm{rec}}+\lambda\,\mathcal{L}_{\mathrm{con}}.
-$$
-
----
-
-## 7) 왜 단일 복원은 한계인가?
-- 국소 단서만 보고 복원 → 전역 흐름을 잘못 해석(오프셋, 왜곡).
-- 전환점/핵심 구간이 가려지면 전체 구조 파악 실패.
-- 이웃 기반 가중 집계로 전역 맥락 **회복**.
-
----
-
-## 8) 실험 포인트
-- **In-/Cross-Domain**: 예측(MSE↓)·분류(Acc↑) 모두 상위권. 붉은 별(SimMTM) 우세.  
-- **마스킹 비율↑**: contrastive 계열은 급락, SimMTM은 안정(이웃 집계 보완).  
-- **Few-shot**: 소량 데이터 전이 성능 강함.  
-- **마스킹 아블레이션**: 개수/비율 가이드 제시.
-
----
-
-## 9) 장단점
-**장점**: 단순 블록(Enc/Proj/Dec), 전역 구조 반영, 복원+표현 동시 개선, 데이터 부족에도 강건.  
-**한계**: 배치 다양성/이웃 질에 민감, \(r,M,\tau,\lambda\) 튜닝 필요.
-
----
-
-## 10) 실무 체크리스트
-- Encoder: 1D-CNN/Transformer, Projector: 소형 MLP, Decoder: MLP  
-- 초기값: \(r\in[0.25,0.5],\ M\in\{2,3\},\ \tau\in[0.05,0.2],\ \lambda\in[0.1,1.0]\)  
-- 이웃: 자기+타 시계열 모두 포함(퇴화 방지)  
-- 긴 시계열: 패치 분할 후 결합  
-- 평가: 복원(MSE/MAE) + 다운스트림(예측/분류)
-
----
-
-## 11) 빠른 수식 모음(복붙)
-**Cosine**
-$$
-\mathrm{cos}(u,v)=\frac{u^\top v}{\lVert u\rVert\,\lVert v\rVert}
-$$
-
-**Aggregation**
-$$
-\hat{z}_i(t)=\sum_{k\neq i}\frac{\exp\!\big(R_{s_i,s_k}/\tau\big)}{\sum\limits_{v\neq i}\exp\!\big(R_{s_i,s_v}/\tau\big)}\,z_k(t)
-$$
-
-**Reconstruction**
-$$
-\mathcal{L}_{\mathrm{rec}}=\sum_{i}\lVert \hat{x}_i-x_i\rVert_2^2
-$$
-
-**Contrastive(InfoNCE)**
-$$
-\mathcal{L}_{\mathrm{con}}
-=-\sum_{s}\sum_{s^+}
-\log\frac{\exp\!\big(R_{s,s^+}/\tau\big)}{\sum\limits_{s'\neq s}\exp\!\big(R_{s,s'}/\tau\big)}
-$$
-
-**Final**
-$$
-\min_{\Theta}\ \mathcal{L}_{\mathrm{rec}}+\lambda\,\mathcal{L}_{\mathrm{con}}
+\min_{\Theta}\;\mathcal{L}
+=\mathcal{L}_{\mathrm{rec}}+\lambda\,\mathcal{L}_{\mathrm{con}},
+\qquad
+\Theta=\{\theta,\, g,\, d\}.
 $$
 
 ---
 
-## 참고
-- **SimMTM: A Simple Pre-Training Framework for Masked Time-Series Modeling**, NeurIPS 2023.
+## 8) 단계별 파이프라인
+
+1. **Masking**: 각 \(x_i\)에서 무작위 마스킹 \(M\)개 생성 → \(\{\bar{x}_{ij}\}\)  
+2. **Encoding/Projection**: \(f_\theta\)로 point-wise, \(g\)로 series-wise 임베딩 산출  
+3. **Similarity & Aggregation**: 유사도 행렬 \(R\)로 이웃 가중치 \(\alpha\) 계산 → 시점별 가중 평균  
+4. **Decoding**: \(d\)를 통해 \(\hat{x}_{ij}\) 복원  
+5. **Training**: \(\mathcal{L}_{\mathrm{rec}}+\lambda\mathcal{L}_{\mathrm{con}}\) 최소화
+
+---
+
+## 9) 실험 결과
+
+- **In-Domain & Cross-Domain** 모두에서 SimMTM이 **최상위 성능**.  
+  - \(x\)-축: Forecasting MSE↓, \(y\)-축: Classification Accuracy↑ — **붉은 별**(SimMTM)이 우상향/좌하향 목표를 동시에 달성.
+- **마스킹 비율 변화**에 강건.  
+  - TST 등 contrastive 기반은 비율↑ 시 구조 손실로 성능 급락, SimMTM은 **성능 유지**.
+- **저데이터 파인튜닝**에서도 우수.  
+  - 제한된 표본에서도 복원/표현 품질 유지 → **현실 적용성** 높음.
+- **마스킹 설정 가이드** 제공.  
+  - 마스킹 개수·비율 조합 실험으로 **실전 튜닝 기준** 제시.
+
+---
+
+## 10) 왜 잘 작동하나?
+
+- 단일 시계열 복원 방식의 **국소성 한계**를, **series-wise 유사도**로 찾은 **구조 이웃의 앙상블**로 보완.  
+- 복원(값 일치)과 표현(구조 정돈)을 **동시에** 최적화 → Downstream에 유리.  
+- “**manifold에서의 복원**” 관점으로 이해하면, 왜 **흐름(transition, turning point)** 까지 잘 살리는지 설명 가능.
+
+---
+
