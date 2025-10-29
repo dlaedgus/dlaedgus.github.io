@@ -169,17 +169,18 @@ $$
 이므로
 
 $$
-begin{aligned}
-X_t\mid X_{t-2}
-&= \sqrt{\alpha_t}\,\big[\sqrt{\alpha_{t-1}}\,X_{t-2} + \sqrt{1-\alpha_{t-1}}\,\mathcal{N}(0,\mathbf{I})\big]
-+ \sqrt{1-\alpha_t}\,\mathcal{N}(0,\mathbf{I}) \\
+\begin{aligned}
+X_t \mid X_{t-2}
+&= \sqrt{\alpha_t}\,\Big(\sqrt{\alpha_{t-1}}\,X_{t-2} + \sqrt{1-\alpha_{t-1}}\,\mathcal{N}(0,\mathbf{I})\Big)
+   + \sqrt{1-\alpha_t}\,\mathcal{N}(0,\mathbf{I}) \\
 &= \sqrt{\alpha_t\alpha_{t-1}}\,X_{t-2}
-+ \big[\sqrt{\alpha_t(1-\alpha_{t-1})} + \sqrt{1-\alpha_t}\big]\mathcal{N}(0,\mathbf{I}) \\
+   + \Big(\sqrt{\alpha_t(1-\alpha_{t-1})} + \sqrt{1-\alpha_t}\Big)\mathcal{N}(0,\mathbf{I}) \\
 &= \sqrt{\alpha_t\alpha_{t-1}}\,X_{t-2}
-+ \sqrt{1-\alpha_t\alpha_{t-1}}\,\mathcal{N}(0,\mathbf{I})
-\quad\text{[\,}\mathcal{N}(0,a)+\mathcal{N}(0,b)=\mathcal{N}(0,a+b)\text{\,]}.
-end{aligned}
+   + \sqrt{1-\alpha_t\alpha_{t-1}}\,\mathcal{N}(0,\mathbf{I})
+\quad\text{[ }\mathcal{N}(0,a)+\mathcal{N}(0,b)=\mathcal{N}(0,a+b)\text{ ]}.
+\end{aligned}
 $$
+
 
 따라서
 
