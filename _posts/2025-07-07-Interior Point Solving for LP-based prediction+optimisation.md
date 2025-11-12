@@ -17,21 +17,21 @@ math: true
 
 ## 1) High-Level Summary (3–5 sentences)
 
-본 논문은 **predict-then-optimize** 문제에서 **연속 이완 + KKT 미분(QPTL)** 대신, **내부점법(interior point)**의 **동형 자기쌍대(Homogeneous Self-Dual; HSD)** 임베딩을 직접 **미분 가능한 레이어**로 사용하여 **end-to-end** 학습을 수행합니다. 핵심은 **log-barrier**를 쓰는 **LP** 해법의 **전진 패스(Forward)**와 동일한 구조를 **역전파(Backward)**에 재활용해 **$ \partial x^* / \partial c $**를 안정적으로 계산하는 것입니다. 실험적으로, 단순한 문제(부동산 **knapsack**)에서는 **SPO**가 강하지만, **day-ahead 에너지 스케줄링**·**트위터 최단경로** 같은 어려운 세팅에서는 **IntOpt**가 **QPTL/SPO** 대비 **낮은 regret**을 보입니다.
+본 논문은 **predict-then-optimize** 문제에서 **연속 이완 + KKT 미분(QPTL)** 대신, **내부점법(interior point)**의 **동형 자기쌍대(Homogeneous Self-Dual; HSD)** 임베딩을 직접 **미분 가능한 레이어**로 사용하여 **end-to-end** 학습을 수행. 핵심은 **log-barrier**를 쓰는 **LP** 해법의 **Forward**와 동일한 구조를 **Backward**에 재활용해 **$ \partial x^* / \partial c $**를 안정적으로 계산하는 것. 실험적으로, 단순한 문제(**knapsack**)에서는 **SPO**가 강하지만, **day-ahead 에너지 스케줄링**·**트위터 최단경로** 같은 어려운 세팅에서는 **IntOpt**가 **QPTL/SPO** 대비 **낮은 regret**을 보임.
 
 ---
 
 ## 2) Problem — 무엇이 문제인가?
 
-전통적 **two-stage** 파이프라인은 **예측 정확도(MSE/CE/AUC)**만을 최소화해 모델을 학습한 뒤, 그 출력을 최적화 모듈에 전달합니다. 그러나 **의사결정 품질(decision quality)**은 예측 정확도와 일치하지 않으며, 특히 **LP/MILP**의 **argmin**은 이산/비매끄러워 **미분 불가** 혹은 **거의 모든 곳에서 0**인 문제가 있습니다. 이로 인해 **regret** 같은 **task-loss**를 직접 최소화하기가 어렵습니다.
+전통적 **two-stage** 파이프라인은 **예측 정확도(MSE/CE/AUC)**만을 최소화해 모델을 학습한 뒤, 그 출력을 최적화 모듈에 전달. 그러나 **의사결정 품질(decision quality)**은 예측 정확도와 일치하지 않으며, 특히 **LP/MILP**의 **argmin**은 이산/비매끄러워 **미분 불가** 혹은 **거의 모든 곳에서 0**인 문제가 있음. 이로 인해 **regret** 같은 **task-loss**를 직접 최소화하기가 어려움.
 
 ---
 
 ## 3) Proposed Solution — Interior-Point (HSD) 기반 End-to-End
 
-- **아이디어:** **MILP → LP 이완** 후, **log-barrier**를 포함한 **HSD 임베딩**을 사용하여 **LP 레이어**를 구성하고, 이를 **내부점법**으로 풉니다.  
+- **아이디어:** **MILP → LP 이완** 후, **log-barrier**를 포함한 **HSD 임베딩**을 사용하여 **LP 레이어**를 구성하고, 이를 **내부점법**으로 풂.  
 - **Forward:** 내부점법으로 **$x^*(\hat c; A, b)$** 계산.  
-- **Backward:** 동일한 **HSD 선형계**를 역으로 풀어 **$ \partial x^* / \partial \hat c $** 계산 → **$ \partial L/\partial \theta = (\partial L/\partial x^*)(\partial x^*/\partial \hat c)(\partial \hat c/\partial \theta) $**.  
+- **Backward:** 동일한 **HSD 선형계**를 역으로 풀어 **$$ \partial x^* / \partial \hat c $$** 계산 → **$ \partial L/\partial \theta = (\partial L/\partial x^*)(\partial x^*/\partial \hat c)(\partial \hat c/\partial \theta) $$**.  
 - **안정화:** **$\lambda$-cutoff(early stopping)**, **Tikhonov damping** 등 수치 안정화 기법 적용.
 
 ---
@@ -50,7 +50,7 @@ $$
 \operatorname{regret}(\hat c,c;A,b)
 = c^\top\!\big(x^*(\hat c;A,b)-x^*(c;A,b)\big)
 $$
-을 줄이도록 $\theta$를 학습합니다. **뒤 항 $c^\top x^*(c)$는 상수**이므로, 학습 시 **$c^\top x^*(\hat c)$** 최소화에 집중합니다. 이때 **MILP → LP**로 이완하여 **미분 경로**를 만듭니다.
+을 줄이도록 $\theta$를 학습합니다. **뒤 항 $$c^\top x^*(c)$$는 상수**이므로, 학습 시 **$$c^\top x^*(\hat c)$$** 최소화에 집중합니다. 이때 **MILP → LP**로 이완하여 **미분 경로**를 만듦
 
 ---
 
