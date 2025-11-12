@@ -77,7 +77,7 @@ SPO loss function이 nonconvex이고 discontinuous 여도 DT의 구조적 특성
 
 ---
 
-## 8) 수식/정의 (원문 내용 그대로, 수식만 LaTeX 표기)
+## 8) 수식/정의
 
 - 의사결정 가능한 해의 영역: $S \subseteq \mathbb{R}^{d}$  
 - 의사결정 문제의 최적값:
