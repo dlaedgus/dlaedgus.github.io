@@ -1,7 +1,7 @@
 ---
 title: "Practical Large-Scale Linear Programming using Primal-Dual Hybrid Gradient (NeurIPS 2021)"
 date: 2025-12-01 12:00:00 +0900
-categories: [paper_review]
+categories: [paper_review,OR]
 math: true
 ---
 
