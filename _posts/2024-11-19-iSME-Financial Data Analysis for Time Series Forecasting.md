@@ -2,7 +2,6 @@
 title: "Financial Data Analysis for Time Series Forecasting"
 date: 2024-11-19 12:00:00 +0900
 categories: [iSME, seminar]
-tags: [FTS-Diffusion, scale-invariance, irregularity, time-series, DTW, SISC, KMeans++, diffusion, DDPM, AE, Markov, augmentation]
 math: true
 permalink: /notes/financial-time-series/fts-diffusion/
 ---
