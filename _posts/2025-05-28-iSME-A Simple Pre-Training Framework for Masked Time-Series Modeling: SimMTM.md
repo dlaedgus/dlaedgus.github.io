@@ -2,7 +2,6 @@
 title: "SimMTM: A Simple Pre-Training Framework for Masked Time-Series Modeling (NeurIPS 2023)"
 date: 2025-05-28 12:00:00 +0900
 categories: [iSME, seminar]
-tags: [SimMTM, self-supervised, time-series, masking, manifold, contrastive, cosine, reconstruction]
 math: true
 permalink: /notes/isme/simmtm/
 ---
