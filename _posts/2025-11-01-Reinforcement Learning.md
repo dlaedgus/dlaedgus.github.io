@@ -1,7 +1,7 @@
 ---
 title: "[RL] 강화학습 정리"
 date: 2025-11-01
-categories: [Reinforcement-learning]
+categories: [textbook-summary,Reinforcement-learning]
 tags: [RL, bandit, MDP, Bellman]
 math: true
 permalink: /rl/multi-armed-bandit-mdp/
