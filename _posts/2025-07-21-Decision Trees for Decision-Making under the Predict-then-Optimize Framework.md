@@ -1,7 +1,7 @@
 ---
 title: "Decision Trees for Decision-Making under the Predict-then-Optimize Framework (ICML 2020)"
 date: 2025-07-21 12:00:00 +0900
-categories: [paper_review]
+categories: [paper_review,OR]
 tags: [decision-focused-learning]
 math: true
 ---
