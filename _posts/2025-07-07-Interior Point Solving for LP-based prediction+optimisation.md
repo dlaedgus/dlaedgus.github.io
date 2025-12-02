@@ -1,8 +1,8 @@
 ---
 title: "Interior Point Solving for LP-based Prediction+optimisation (NeurIPS 2020)"
 date: 2025-07-07 12:00:00 +0900
-categories: [paper_review, decision_focused_learning]
-tags: [decision-focused-learning, predict-then-optimize, interior-point, HSD, LP, MILP, neurips2020, log-barrier, regret]
+categories: [paper_review]
+tags: [decision-focused-learning]
 math: true
 ---
 
