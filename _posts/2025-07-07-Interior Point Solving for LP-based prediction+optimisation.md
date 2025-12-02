@@ -1,7 +1,7 @@
 ---
 title: "Interior Point Solving for LP-based Prediction+optimisation (NeurIPS 2020)"
 date: 2025-07-07 12:00:00 +0900
-categories: [paper_review]
+categories: [paper_review-OR]
 tags: [decision-focused-learning]
 math: true
 ---
