@@ -241,6 +241,7 @@ Kx - q
 \end{pmatrix}
 $$
 
+
 $$
 =
 \begin{pmatrix}
