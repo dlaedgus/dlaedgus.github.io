@@ -228,13 +228,15 @@ $$
 
 Saddle-point operator:
 
+
+
+
 $$
 F(x,y) =
 \begin{pmatrix}
 \nabla_x \mathcal{L}(x,y) \\
 -\nabla_y \mathcal{L}(x,y)
-\end{pmatrix}
-=
+\end{pmatrix}=
 \begin{pmatrix}
 c - K^\top y \\
 Kx - q
@@ -243,7 +245,6 @@ $$
 
 
 $$
-=
 \begin{pmatrix}
 0 & -K^\top \\
 K & 0
