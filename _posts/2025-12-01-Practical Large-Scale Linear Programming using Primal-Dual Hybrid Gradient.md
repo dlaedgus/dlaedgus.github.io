@@ -306,6 +306,9 @@ $$
 
 ## Practical Algorithmic Improvements
 
+<img width="1177" height="535" alt="image" src="https://github.com/user-attachments/assets/491ace8a-64b3-4c03-9cc7-a3816302f593" />
+<img width="1087" height="416" alt="image" src="https://github.com/user-attachments/assets/94a0dccf-be16-49ed-96bc-1b5232ef3bfa" />
+
 - $t$: 한 restart 안에서 PDHG 수행 횟수  
 - $k$: global PDHG step 수  
 - $n$: restart index  
@@ -392,6 +395,8 @@ $$
 ---
 
 ## Primal Weight Updates
+
+<img width="1283" height="330" alt="image" src="https://github.com/user-attachments/assets/078e1aee-f1f7-4ddb-ae92-c696a3d5fc0a" />
 
 목표: primal/dual distance 균형
 
@@ -489,15 +494,9 @@ $$
 \epsilon (1 + \|c\|_2)
 $$
 
-KKT passes는 $K, K^\top$에 대한 matrix multiplication 비용을 의미.
-
-<img width="1177" height="535" alt="image" src="https://github.com/user-attachments/assets/491ace8a-64b3-4c03-9cc7-a3816302f593" />
-<img width="1087" height="416" alt="image" src="https://github.com/user-attachments/assets/94a0dccf-be16-49ed-96bc-1b5232ef3bfa" />
-
-
-<img width="1283" height="330" alt="image" src="https://github.com/user-attachments/assets/078e1aee-f1f7-4ddb-ae92-c696a3d5fc0a" />
-
 <img width="1323" height="379" alt="image" src="https://github.com/user-attachments/assets/23f1df04-0012-4d30-8178-0fa09c491738" />
+
+KKT passes는 $K, K^\top$에 대한 matrix multiplication 비용을 의미.
 
 <img width="1311" height="906" alt="image" src="https://github.com/user-attachments/assets/f591cf1b-f39e-4d3d-bf29-8f2ff6e0d46a" />
 
