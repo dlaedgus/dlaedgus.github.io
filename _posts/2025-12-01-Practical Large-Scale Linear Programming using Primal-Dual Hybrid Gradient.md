@@ -14,47 +14,31 @@ math: true
 
 ---
 
-## Introduction
+### **Introduction**
 
-First-order methods (use gradient, not Hessian information) are standard practice in many areas of optimization.
+First-order methods(use gradient, not Hessian information) - standard practice in many areas of optimization
 
-FOMs의 단점: *tailing-off*  
-→ moderately accurate solution은 빠르게 찾지만 optimal solution에 가까워질수록 개선 속도가 느려짐  
-→ LP를 풀 때의 문제  
-→ properly enhanced하면 해결 가능
+FOMs의 단점 : *tailing-off* - moderately accurate solution은 빠르게 찾지만 optimal solution에 가까워질수록 개선 속도가 느려짐 → LP를 풀 때의 문제 → properly enhanced하면 됨
 
-기존에 개발된 FOMs의 linear rates는 계산하기 어렵고 느슨한 상수들에 의존  
-→ *tailing-off* 발생 가능  
-→ theoretical enhancements와 practical heuristics를 결합  
-→ PDLP
+기존의 developed FOMs의 linear rates depend on potentially loose and hard-to-compute constants → *tailling-off*  발생 가능 → combine both theoretical enhancements with practical heuristics → PDLP
 
-Matrix factorization에 의존하는 simplex method, interior-point methods는 large-scale LP를 풀기 어려움.  
-반면 PDLP는 factorization이 없고 matrix-vector operation만 사용  
-→ GPU 환경에서도 사용 가능
+matrix factorization에 의존하는 simplex method, interior-point methods는 large scale LP를 풀기 어렵지만 PDLP는 factorization이 없음, matrix-vector operation 연산 사용 → GPU환경 가능
 
 ---
 
-## Literature Review
+### **Literature reivew**
 
-**PDHG**  
-Proximal point / ADMM 계열에 뿌리를 둔 primal-dual 1차 방법.  
-Matrix-factorization 없이 matrix-vector 연산만 사용하기 때문에 large-scale, parallel, distributed computation에 적합.
+PDHG - proximal point/ADMM 계열에 뿌리를 둔 primal-dual 1차 방법으로, matrix-factorization 없이 matrix-vector 연산만 사용하기 때문에 large-scale·parallel·distributed computation에 적합
 
-**FOM-based solvers**  
-기존 1차 기반 솔버들은 PDHG, Nesterov 가속, ADMM 등으로 발전.  
-일부는 matrix-free 구현을 제공하지만 여전히 선형 시스템 해결이나 2차적 기법에 의존.  
-PDLP는 이러한 접근들보다 더 빠르고 강건한 대안을 제시.
+FOM-based solvers - 기존의 1차 기반 솔버들은 PDHG, Nesterov 가속, ADMM 등 다양한 계열로 발전해 왔으며, 일부는 matrix-free 구현을 제공하지만 여전히 선형 시스템 해결이나 2차적 기법에 의존한다. PDLP는 이러한 접근들보다 더 빠르고 강건한 대안을 제시한다.
 
-**FOMs for LP**  
-PDLP는 범용 솔버가 아니라 LP에 특화된(specialized) 방법.
+FOMs for LP - PDLP는 범용 솔버가 아니라 LP에 specialized 되어 있음
 
 ---
 
-## Preliminaries
+### **Preliminaries**
 
-### Linear Programming
-
-다음과 같은 primal-dual LP 문제를 고려:
+Linear Programming - solve primal-dual LP problems of the form: 
 
 $$
 \begin{aligned}
@@ -75,20 +59,20 @@ $$
 \end{aligned}
 $$
 
-where
+$$
+\text{where }\;
+G \in \mathbb{R}^{m_1 \times n},\;
+A \in \mathbb{R}^{m_2 \times n},\;
+c \in \mathbb{R}^n,\;
+h \in \mathbb{R}^{m_1},\;
+b \in \mathbb{R}^{m_2},\;
+l \in (\mathbb{R} \cup \{-\infty\})^n,\;
+u \in (\mathbb{R} \cup \{\infty\})^n,
+$$
 
 $$
-\begin{aligned}
-& G \in \mathbb{R}^{m_1 \times n}, \quad
-A \in \mathbb{R}^{m_2 \times n}, \quad
-c \in \mathbb{R}^n, \\
-& h \in \mathbb{R}^{m_1}, \quad
-b \in \mathbb{R}^{m_2}, \\
-& l \in (\mathbb{R} \cup \{-\infty\})^n, \quad
-u \in (\mathbb{R} \cup \{\infty\})^n, \\
-& K^\top = (G^\top, A^\top), \quad
+K^\top = (G^\top, A^\top), \qquad
 q^\top = (h^\top, b^\top)
-\end{aligned}
 $$
 
 $$
@@ -101,362 +85,409 @@ $$
 \end{cases}
 $$
 
-Primal 제약을 다음과 같이 다시 씀:
+primal의 제약식  
+$h - Gx \le 0,\; b - Ax = 0,\; l - x \le 0,\; x - u \le 0$ 으로 고침
+
+라그랑주 승수  
+$y_G \in \mathbb{R}^{m_1},\; y_A \in \mathbb{R}^{m_2},\; \lambda^+,\; \lambda^-$
+
+$y = [y_G\; y_A] \in \mathbb{R}^{m_1+m_2}$
+
+$y_G^\top (h-Gx)$에서 $h - Gx>0$ 인 경우 즉 제약을 위반하는 경우  
+$y_G < 0$이면  $y_G^\top (h-Gx) < 0$ 이 됨. 즉, 페널티가 작아짐 따라서 ≥ 0이여야함 
+
+$y_A$는 부호제약 x  종합하면 → $y_{1:m_1} \ge 0$
+
+$L(x,y,\lambda^+,\lambda^-) = c^\top x + y_G^\top (h-Gx) + y_A^\top (b-Ax) + (\lambda^+)^\top (l-x) + (\lambda^-)^\top (x-u)$
+
+$L = (c - G^\top y_G - A^\top y_A - \lambda^+ + \lambda^-)^\top x + (h^\top y_G + b^\top y_A + l^\top \lambda^+ - u^\top \lambda^-)$
+
+듀얼 함수는  
+$g(y,\lambda^+,\lambda^-) := \inf_{x \in \mathbb{R}^n} L(x,y,\lambda^+,\lambda^-)$
+
+이때 x계수가 0이 아니면 식이 $-\infty$이므로 x계수가 0 이여야 함
+
+$c - G^\top y_G - A^\top y_A - \lambda^+ + \lambda^- = 0$  
+→  $c-K^\top y -\lambda=0$
+
+이제 상수항을 최대화 해야하므로
 
 $$
-h - Gx \le 0,\quad
-b - Ax = 0,\quad
-l - x \le 0,\quad
-x - u \le 0
-$$
-
-라그랑주 승수:
-
-$$
-y_G \in \mathbb{R}^{m_1},\quad
-y_A \in \mathbb{R}^{m_2},\quad
-\lambda^+,\quad
-\lambda^-
-$$
-
-$$
-y = [y_G\; y_A] \in \mathbb{R}^{m_1+m_2}
-$$
-
-$y_G^\top (h - Gx)$에서 $h - Gx > 0$ (제약 위반)일 때  
-$y_G < 0$이면 $y_G^\top (h - Gx) < 0$이 되어 페널티가 작아짐.  
-따라서 $y_G \ge 0$이어야 함.
-
-$y_A$는 equality constraint에 대응 → 부호 제약 없음.  
-종합하면:
-
-$$
-y_{1:m_1} \ge 0
-$$
-
-라그랑지안:
-
-$$
-\begin{aligned}
-L(x,y,\lambda^+,\lambda^-)
-&= c^\top x
-+ y_G^\top (h - Gx)
-+ y_A^\top (b - Ax) \\
-&\quad + (\lambda^+)^\top (l - x)
-+ (\lambda^-)^\top (x - u)
-\end{aligned}
-$$
-
-정리하면:
-
-$$
-L = (c - G^\top y_G - A^\top y_A - \lambda^+ + \lambda^-)^\top x
-+ (h^\top y_G + b^\top y_A + l^\top \lambda^+ - u^\top \lambda^-)
-$$
-
-Dual function:
-
-$$
-g(y,\lambda^+,\lambda^-) := \inf_{x \in \mathbb{R}^n} L(x,y,\lambda^+,\lambda^-)
-$$
-
-$x$의 계수가 0이 아니면 $-\infty$가 되므로:
-
-$$
-c - G^\top y_G - A^\top y_A - \lambda^+ + \lambda^- = 0
-\quad\Leftrightarrow\quad
-c - K^\top y - \lambda = 0
-$$
-
-상수항을 최대화:
-
-$$
-\max_{y,\lambda} \;
+\max_{y \in \mathbb{R}^{m_1+m_2},\; \lambda \in \mathbb{R}^n}
 h^\top y_G + b^\top y_A + l^\top \lambda^+ - u^\top \lambda^-
 = q^\top y + l^\top \lambda^+ - u^\top \lambda^-
 $$
 
-각 $x_i$마다 $(l_i, u_i)$가 다르므로 $\lambda \in \Lambda$.
+이때 각 $x_i$ 마다 제약이 다름 , 즉 $l_i , u_i$가 다름 따라서 
 
----
-
-### Saddle-Point Formulation
-
-Primal-dual 문제를 saddle-point problem으로 표현:
+이 primal-dual problems를 saddle-point problem으로 바꾸면
 
 $$
-\min_{x \in X} \max_{y \in Y}
-\mathcal{L}(x,y)
-:= c^\top x - y^\top K x + q^\top y
-$$
-
-$$
-X := \{ x \in \mathbb{R}^n : l \le x \le u \}, \qquad
+\min_{x \in X} \; \max_{y \in Y} \; \mathcal{L}(x,y):= c^\top x - y^\top K x + q^\top y
+\\
+X := \{ x \in \mathbb{R}^n : l \le x \le u \}, 
+\qquad
 Y := \{ y \in \mathbb{R}^{m_1+m_2} : y_{1:m_1} \ge 0 \}
 $$
 
-Saddle-point를 찾기 위해:
-
-- $x$: gradient descent  
-- $y$: gradient ascent
+saddle-point를 찾기 위해  
+x - gradient descent, y - gradient ascent를 해야함
 
 $$
 \begin{aligned}
-x^{k+1} &= \operatorname{proj}_X \bigl(x^k - \tau (c - K^\top y^k)\bigr), \\
-y^{k+1} &= \operatorname{proj}_Y \bigl(y^k + \sigma (q - K(2x^{k+1} - x^k))\bigr)
+x^{k+1}&= \operatorname{proj}_X \bigl(x^k - \tau (c - K^\top y^k)\bigr), \\
+y^{k+1}&= \operatorname{proj}_Y \bigl(y^k + \sigma (q - K(2x^{k+1} - x^k))\bigr)
 \end{aligned}
 $$
 
-즉,
+즉,  
+$x \leftarrow x - \tau \nabla_x \mathcal L$  
+$y \leftarrow y + \sigma \nabla_y \mathcal L$
 
-$$
-x \leftarrow x - \tau \nabla_x \mathcal{L}, \qquad
-y \leftarrow y + \sigma \nabla_y \mathcal{L}
-$$
+이때의 문제, x,y의 범위에 관한 제약이 깨질 수 있음
 
-Gradient step 이후 제약 위반 가능 → projection 필요.
+gradient step을 하면 x, y 가  
+$l < x < u,\; y > 0$ 범위 밖으로 나갈 수 있음
 
-Projection 정의:
+해결 방법 : projection  
+$\text{proj}_X(z) =$ X안에서 z와 가장 가까운 점
 
-$$
-\operatorname{proj}_X(z) = \arg\min_{x \in X} \|x - z\|_2
-$$
+즉,  
+$x^{k+1} = \text{proj}_X(\text{gradient step})$
 
----
+이때 왜 $2x^{k+1}-x^{k}$인지?
 
-### Extragradient 해석
-
-Saddle-point operator:
-
-
-
+saddle-point operator
 
 $$
 F(x,y) =
 \begin{pmatrix}
-\nabla_x \mathcal{L}(x,y) \\
--\nabla_y \mathcal{L}(x,y)
-\end{pmatrix}=
+\nabla_x \mathcal L(x,y) \\
+-\nabla_y \mathcal L(x,y)
+\end{pmatrix} =
+
 \begin{pmatrix}
 c - K^\top y \\
 Kx - q
-\end{pmatrix}
-$$
+\end{pmatrix} =
 
-
-$$
 \begin{pmatrix}
 0 & -K^\top \\
 K & 0
 \end{pmatrix}
 \begin{pmatrix}
-x \\ y
+x \\
+y
 \end{pmatrix}
 +
 \begin{pmatrix}
-c \\ -q
+c \\
+-q
 \end{pmatrix}
 $$
 
-여기서
+에서  
+$M = \begin{pmatrix} 0 & -K^\top \\ K & 0 \end{pmatrix} = -M^\top$  
+즉, skew-symmetric이기 때문에 rotational한 특성이 있음
+
+따라서 extragradient를 사용해서  
+k+1 step으로 한 번 미리 가 보고 그 위치에서 방향을 다시 계산
+
+$\tau , \sigma > 0$ 은 각각 primal, dual의 step size이고 둘이 독립적
+
+$\tau\sigma||K||_2^{2}\le1$ 일 때 optimal 로 수렴
+
+step size를 재파라미터화 →  
+$\tau = \eta/\omega,\; \sigma=\omega\eta$
+
+$\eta\in(0,\infty)$ 는 step size,  
+$\omega \in(0,\infty)$ 는 primal weight임
+
+따라서 수렴 조건이  
+$\eta\le1/||K||_2$
+
+weighted Euclidean norm
 
 $$
-M =
-\begin{pmatrix}
-0 & -K^\top \\
-K & 0
-\end{pmatrix}
-= -M^\top
-$$
-
-→ skew-symmetric  
-→ rotational 특성  
-→ extragradient 사용
-
----
-
-### Step Size와 Weighted Norm
-
-$\tau, \sigma > 0$는 각각 primal, dual step size.
-
-수렴 조건:
-
-$$
-\tau \sigma \|K\|_2^2 \le 1
-$$
-
-재파라미터화:
-
-$$
-\tau = \eta / \omega, \qquad
-\sigma = \omega \eta
-$$
-
-$$
-\eta \le \frac{1}{\|K\|_2}
-$$
-
-Weighted norm:
-
-$$
-\|z\|_\omega :=
-\sqrt{ \omega \|x\|_2^2 + \frac{\|y\|_2^2}{\omega} },
+||z||_\omega := \sqrt{\,\omega\,||x||_2^2 + \frac{||y||_2^2}{\omega}\,},
 \quad z=(x,y)
 $$
 
 ---
 
-## Practical Algorithmic Improvements
+### **Practical algorithmic improvements**
 
 <img width="1177" height="535" alt="image" src="https://github.com/user-attachments/assets/491ace8a-64b3-4c03-9cc7-a3816302f593" />
 <img width="1087" height="416" alt="image" src="https://github.com/user-attachments/assets/94a0dccf-be16-49ed-96bc-1b5232ef3bfa" />
 
-- $t$: 한 restart 안에서 PDHG 수행 횟수  
-- $k$: global PDHG step 수  
-- $n$: restart index  
-- $z^{n,t}$: $n$번째 restart의 $t$번째 iterate  
-- $\omega^n$: $n$번째 restart에서의 primal weight  
+$t$ : 한 restart 안에서 몇 번 PDHG 했는지  
 
-Algorithm 2는 $(z, \omega, \hat\eta)$를 입력으로 받아  
-trial PDHG step을 수행하여 허용 가능한 최대 step size $\bar\eta$를 계산.
+$k$ : global, 지금까지 총 PDHG 스텝 수, k가 커질수록 $\eta' \approx \min(\bar\eta,\eta)$ 보수적 조정  
 
-- $\eta \le \bar\eta$: update accept  
-- $\eta > \bar\eta$: step size 감소 후 재시도
+$n$ : 몇 번째 restart인지  
 
----
+$z^{n,t}$ : n번째 restart에서 t번째 PDHG의 결과  
 
-### Normalized Duality Gap
+$\omega^n$ : n번째 restart 에서 쓰이는 primal weight  
+
+Algorithm 2는 현재 iterate $z=(x,y)$와 현재 primal weight $\omega$, step size candidate $\hat\eta$를 입력으로 받아서  
+먼저 $\eta = \hat\eta$로 두고 현재 $x,y$에서 이 $\eta, \omega$를 사용해 PDHG를 한 step을 시험적으로 수행하여 $x',y'$를 얻음.  
+
+이 $x',y'$ 에 대해 허용되는 최대 step size인 $\bar\eta$를 계산하고, 이를 이용해 다음에 사용할 step size candidate $\eta'$를 정함.  
+
+만약 이번에 사용한 step size $\eta$가 $\eta\le\bar\eta$ 면 방금 계산한 $x',y'$를 다음 iterate로 확정하고  
+$x',y'$와 $\eta, \bar\eta$를 반환함.  
+
+반대로 $\eta>\bar\eta$면 방금 시험 계산한 $x',y'$는 버리고 새로운 step size $\eta'$로 줄인 뒤 같은 x,y 위치에서 다시 같은 과정을 반복.
+
+PDHG를 restart할 조건 - $z$에서의 normalized duality gap
 
 $$
 \rho_r^n(z)
-:= \frac{1}{r}
-\max_{\hat z \in Z: \|z-\hat z\|_{\omega^n} \le r}
-\left\{ \mathcal{L}(x,\hat y) - \mathcal{L}(\hat x,y) \right\}
+:=
+\frac{1}{r}
+\max_{\;(\hat x,\hat y)\in Z:\ \|z-\hat z\|_{\omega^n}\le r}
+\left\{
+\mathcal L(x,\hat y)-\mathcal L(\hat x,y)
+\right\}
 $$
 
-LP에서는 feasible set이 unbounded → global gap은 무한대 가능  
-→ local duality gap 사용
+현재 얼마나 saddle point에서 벗어났는가? 를 측정
 
-Reference-based measure:
+standard duality gap의 문제?  
+LP에서는 feasible set $Z$가 unbounded 여서 무한대가 나올 수 있음  
+
+→ global이 아니라 local을 보기  
+
+현재 $z$근처 $\|z-\hat z\|_{\omega^n}\le r$ 안에서만 duality gap을 계산  
+
+이때 $r$이 너무 커지면 gap이 커지고 $r$이 작으면 gap도 작아짐  
+
+→ normalized
+
+즉, $\rho_r^n(z)$는 현재 $z$ 주변 반지름 $r$ 안에서 max saddle violation을 보고 그 값을 $r$로 나눈 값
 
 $$
 \mu_n(z,z_{\mathrm{ref}})
-:= \rho_{\|z-z_{\mathrm{ref}}\|_{\omega^n}}^n(z)
+:=
+\rho_{\|z-z_{\mathrm{ref}}\|_{\omega^n}}^n(z)
 $$
 
-Restart candidate 선택:
+reference point 기준으로 현재 얼마나 saddle point에서 벗어났는지?
+
+고정된 n에서 PDHG를 여러 번 시행하면 $z^{n,t+1}$, $\bar z^{n,t+1}$ 이 생김  
+
+이 둘 중 어느쪽이 saddle-point에 가까운지는 모르는 상태  
+
+따라서 normalized duality gap이 작은 쪽으로 선택
 
 $$
-\text{GetRestartCandidate}(z^{n,t+1}, \bar z^{n,t+1}, z^{n,0})
+\text{GetRestartCandidate}(z^{n,t+1},\bar z^{n,t+1},z^{n,0})
 =
 \begin{cases}
-z^{n,t+1}, &
-\mu_n(z^{n,t+1}, z^{n,0})
-<
-\mu_n(\bar z^{n,t+1}, z^{n,0}) \\
+z^{n,t+1}, & \mu_n(z^{n,t+1},z^{n,0}) < \mu_n(\bar z^{n,t+1},z^{n,0}), \\
 \bar z^{n,t+1}, & \text{otherwise}
 \end{cases}
 $$
 
+restart를 하면 어디서 할지를 정하는 함수
+
+$z^{n,0}$ : n번째 outer loop 시작점 - reference  
+
+$z^{n,t}_c$ : n번째 outer loop 시점에서 t번째 inner loop까지 봤을 때 본 restart candidate  
+
+Restart란 PDHG를 멈추고  
+$z^{n+1,0} := z_c^{n,t}$ 로 reset, primal weight 업데이트 하는 과정
+
 ---
 
-### Restart Criteria
+**Restart criteria**
 
-1. **Sufficient decay**
+1. **Sufficient decay in normalized duality gap**
+   
+   $$
+   \mu_n(z_c^{n,t+1}, z^{n,0})
+   \le
+   \beta_{\text{sufficient}}\,
+   \mu_n(z^{n,0}, z^{n-1,0})
+   $$
 
-$$
-\mu_n(z_c^{n,t+1}, z^{n,0})
-\le
-\beta_{\text{sufficient}}
-\mu_n(z^{n,0}, z^{n-1,0})
-$$
-
-2. **Necessary decay + no local progress**
-
-$$
-\mu_n(z_c^{n,t+1}, z^{n,0})
-\le
-\beta_{\text{necessary}}
-\mu_n(z^{n,0}, z^{n-1,0})
-$$
-
-and
-
-$$
-\mu_n(z_c^{n,t+1}, z^{n,0})
->
-\mu_n(z_c^{n,t}, z^{n,0})
-$$
+2. **Necessary decay + no local progress in normalized duality gap**
+   
+   $$
+   \mu_n(z_c^{n,t+1}, z^{n,0})
+   \le
+   \beta_{\text{necessary}}\,
+   \mu_n(z^{n,0}, z^{n-1,0})
+   $$
+   and
+   $$
+   \mu_n(z_c^{n,t+1}, z^{n,0})
+   >
+   \mu_n(z_c^{n,t}, z^{n,0})
+   $$
 
 3. **Long inner loop**
-
-$$
-t \ge \beta_{\text{artificial}} k
-$$
+   
+   $$
+   t \ge \beta_{\text{artificial}}\, k
+   $$
 
 ---
 
-## Primal Weight Updates
+### **Primal weight updates**
 
 <img width="1283" height="330" alt="image" src="https://github.com/user-attachments/assets/078e1aee-f1f7-4ddb-ae92-c696a3d5fc0a" />
 
-목표: primal/dual distance 균형
+scale invariance 보장
 
-$$
-\|x^{n,t} - x^*\|_{\omega^n}
-\approx
-\|y^{n,t} - y^*\|_{\omega^n}
-$$
+Algorithm 3 aims to choose the primal weight $\omega^{n}$ such that distance to optimality in the primal and dual is the same
 
-Proxy 사용:
+$x,y$ 의 균형을 맞추는 설계
 
-$$
-\Delta_x^n = \|x^{n,0} - x^{n-1,0}\|_2, \quad
-\Delta_y^n = \|y^{n,0} - y^{n-1,0}\|_2
-$$
+$||x^{n,t}-x^*||_{\omega^n} = \omega^n||x^{n,t}-x^*||_{2}$  
 
-Log smoothing:
+$||y^{n,t}-y^*||_{\omega^n} = \frac{1}{\omega^n} ||y^{n,t}-y^*||_{2}$
+
+$\omega$가 커지면 primal 거리가 커지고 dual은 작아짐  
+$\omega$가 작아지면 dual 거리가 커지고 primal 거리는 작아짐
+
+목표 →  
+$||x^{n,t}-x^*||_{\omega^n} \approx ||y^{n,t}-y^*||_{\omega^n}$
+
+$\omega^n = \frac{||y^{n,t}-y^*||_{2}}{||x^{n,t}-x^*||_{2}}$
+
+하지만 $x^*,y^*$는 모르는 값이므로 proxy 사용 →  
+직전 restart 대비 이동량  
+
+$Δ^n_x = ||x^{n,0}-x^{n-1,0}||_2$  
+
+$Δ^n_y = ||y^{n,0}-y^{n-1,0}||_2$
+
+→ $Δ^n_y/Δ^n_x$ 사용
+
+그런데 log smoothing 하는 이유는  
+restart마다 튀는 값이 생겨 oscillate 하기 때문
+
+최종적으로
 
 $$
 \omega^n
 =
 \exp\big(
-\theta \log(\Delta_y^n / \Delta_x^n)
-+ (1-\theta)\log(\omega^{n-1})
+\theta \log(Δ^n_y/Δ^n_x)
++
+(1-\theta)\log(\omega^{n-1})
 \big)
 $$
 
 ---
 
-## Presolve
+### **Presolve**
 
-PaPILO 사용.
+PaPILO 를 사용해서 Presolve
 
 ---
 
-## Diagonal Preconditioning
+### **Diagonal Preconditioning**
 
-Constraint matrix $K=(G,A)$에 대해:
-
-$$
-\tilde K = D_1 K D_2
-$$
-
-변환:
+constraint matrix $K = (G,A)$ 를 positive diagonal matrices $D_1,D_2$ 를 이용해
 
 $$
-\hat x = D_2^{-1} x, \quad
-\tilde c = D_2 c, \quad
-(\tilde b, \tilde h) = D_1(b,h)
+\tilde K = (\tilde G,\tilde A)=D_1KD_2
 $$
 
-Scaling 방법:
+$\tilde K$는 well balanced
 
-1. No scaling: $D_1=D_2=I$
-2. Pock–Chambolle
-3. Ruiz
+이 과정에서
 
-PDLP에서는 Ruiz와 Pock–Chambolle 혼합 사용.
+$A, G, c, b, h, u, l$
+
+은
+
+$\tilde G, \tilde A, \hat x = D_2^{-1} x, \tilde c = D_2 c,$  
+
+$(\tilde b, \tilde h) = D_1 (b, h),$  
+
+$\tilde u = D_2^{-1} u, \tilde l = D_2^{-1} l$
+
+로 바뀜
+
+$D_1,D_2$ 를 고르는 3가지 방법
+
+1. No scaling  
+   $D_1=D_2=I$
+
+2. Pock–Chambolle  
+   
+   $(D_1)_{jj} = \sqrt{||K_{j,:}||_{2-\alpha}}, \quad j=1,...,m_1+m_2$  
+   $(D_2)_{ii} = \sqrt{||K_{:,i}||_{\alpha}}, \quad i=1,...,n$  
+   $\alpha = 1$
+
+3. Ruiz  
+   
+   $(D_1)_{jj} = \sqrt{||K_{j,:}||_{\infty}},$  
+   $(D_2)_{ii} = \sqrt{||K_{:,i}||_{\infty}}$
+
+PDLP 세팅에서 Ruiz 와 Pock–Chambolle 섞어서 사용
+
+---
+
+### **Feasibility polishing**
+
+<img width="1004" height="435" alt="image" src="https://github.com/user-attachments/assets/c345dc7e-7b0d-47fe-831a-c74fe641e849" />
+
+PDLP를 끝까지 최적화 하지 않고  
+어느 정도 풀린 시점에서 objective는 거의 유지한 채 feasibility만 polish 해주는 algorithm
+
+왜 필요?  
+미세한 objective를 줄이려고 algorithm을 끝까지 돌리면 시간이 너무 오래 걸림
+
+Integer programming의 branch-and-bound에서 optimality gap이 미리 정해둔 threshold 아래로 떨어지면 algorithm을 종료하는 것처럼  
+FOMs도 extremely small feasibility violations and moderate (e.g., 1%) duality gaps를 가지는 휴리스틱을 개발해야함
+
+1. Restarted PDHG and feasibility problems
+   
+   feasibility problem - objective function이 없는 문제 , 수렴이 빠름
+   
+   $$
+   \min_{x \in \mathbb{R}^n} 0
+   \quad \text{s.t.} \quad
+   \ell_c \le Ax \le u_c,\;
+   \ell_v \le x \le u_v
+   $$
+
+2. Given a starting solution, restarted PDHG will converge to a nearby optimal solution
+   
+   PDHG는 반복이 진행될수록 어떤 optimal solution에 대해서도 반복점과의 PDHG노름 거리가 증가하지 않음  
+   → 원래 문제에 PDHG를 적용하여 얻은 primal solution을 warm start로 삼아서 위의 feasibility problem을 풀면  
+   목적함수를 무시함에도 불구하고 objective값이 나빠지지 않음
+   
+   따라서 PDHG로 이미 거의 최적인 해를 가지고 있다면,  
+   위의 feasibility problem을 풀어 얻은 해는 높은 objective quality을 유지하면서도  
+   tight numerical tolerances 내에서 primal feasibility를 만족할 수 있음
+
+   이 논리를 dual에도 적용하면,
+   
+   $$
+   \max_{y \in \mathbb{R}^m,\, r \in \mathbb{R}^n} 0
+   \quad \text{s.t.} \quad
+   c - A^T y = r,\;
+   y \in \mathcal{Y},\;
+   r \in \mathcal{R}
+   $$
+
+   primal, dual 둘 다 polishing
+
+이 두가지를 바탕으로  
+Algorithm 4는 primal, dual 모두 10⁻⁸ maximum constraint violation 이하인 해를 찾으면서  
+$\varepsilon_{\text{rel-gap}}>0$ 보다 작은 relative duality gap을 만족하는 것을 목표로 함
+
+$$
+\frac{|c^T x + p(y;\ell_c,u_c) + p(r;\ell_v,u_v)|}
+{\max\{|c^T x|,\; |p(y;\ell_c,u_c) + p(r;\ell_v,u_v)|\}}
+\le \varepsilon_{\text{rel-gap}}
+$$
 
 ---
 
@@ -503,3 +534,6 @@ KKT passes는 $K, K^\top$에 대한 matrix multiplication 비용을 의미.
 <img width="1311" height="906" alt="image" src="https://github.com/user-attachments/assets/f591cf1b-f39e-4d3d-bf29-8f2ff6e0d46a" />
 
 <img width="1326" height="818" alt="image" src="https://github.com/user-attachments/assets/eeb0aac6-861c-4ae9-a83f-43cd7c2da953" />
+
+<img width="1271" height="695" alt="image" src="https://github.com/user-attachments/assets/87f9c6da-d38a-4e54-826f-3cf769598a70" />
+
