@@ -321,9 +321,7 @@ $z^{n+1,0} := z_c^{n,t}$ 로 reset, primal weight 업데이트 하는 과정
    $$
    and
    $$
-   \mu_n(z_c^{n,t+1}, z^{n,0})
-   >
-   \mu_n(z_c^{n,t}, z^{n,0})
+   \mu_n(z_c^{n,t+1}, z^{n,0}) > \mu_n(z_c^{n,t}, z^{n,0})
    $$
 
 3. **Long inner loop**
@@ -430,14 +428,25 @@ $D_1,D_2$ 를 고르는 3가지 방법
 
 2. Pock–Chambolle  
    
-   $(D_1)_{jj} = \sqrt{\|K_{j,:}\|_{2-\alpha}}, \quad j=1,...,m_1+m_2$  
-   $(D_2)_{ii} = \sqrt{\|K_{:,i}\|_{\alpha}}, \quad i=1,...,n$  
-   $\alpha = 1$
+   $$
+  (D_1)_{jj}=\sqrt{\lVert K_{j,:}\rVert_{2-\alpha}},
+  \quad j=1,\ldots,m_1+m_2,
+  \qquad
+  (D_2)_{ii}=\sqrt{\lVert K_{:,i}\rVert_{\alpha}},
+  \quad i=1,\ldots,n,
+  \qquad
+  \alpha=1
+  $$
+
 
 3. Ruiz  
    
-   $(D_1)_{jj} = \sqrt{\|K_{j,:}\|_{\infty}},$  
-   $(D_2)_{ii} = \sqrt{\|K_{:,i}\|_{\infty}}$
+   $$
+   (D_1)_{jj}=\sqrt{\lVert K_{j,:}\rVert_{\infty}},
+   \qquad
+   (D_2)_{ii}=\sqrt{\lVert K_{:,i}\rVert_{\infty}}
+   $$
+
 
 PDLP 세팅에서 Ruiz 와 Pock–Chambolle 섞어서 사용
 
