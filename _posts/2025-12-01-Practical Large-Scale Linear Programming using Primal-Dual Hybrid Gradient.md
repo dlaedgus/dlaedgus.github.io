@@ -195,7 +195,8 @@ k+1 step으로 한 번 미리 가 보고 그 위치에서 방향을 다시 계�
 
 $\tau , \sigma > 0$ 은 각각 primal, dual의 step size이고 둘이 독립적
 
-$\tau\sigma||K||_2^{2}\le1$ 일 때 optimal 로 수렴
+$\tau\sigma||K||_2^{2}\le1$ 
+일 때 optimal 로 수렴
 
 step size를 재파라미터화 →  
 $\tau = \eta/\omega,\; \sigma=\omega\eta$
