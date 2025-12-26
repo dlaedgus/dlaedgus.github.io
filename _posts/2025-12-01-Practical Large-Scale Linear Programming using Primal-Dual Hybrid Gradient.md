@@ -164,13 +164,13 @@ F(x,y) =
 \begin{pmatrix}
 \nabla_x \mathcal L(x,y) \\
 -\nabla_y \mathcal L(x,y)
-\end{pmatrix} =
-
+\end{pmatrix}
+=
 \begin{pmatrix}
 c - K^\top y \\
 Kx - q
-\end{pmatrix} =
-
+\end{pmatrix}
+=
 \begin{pmatrix}
 0 & -K^\top \\
 K & 0
@@ -195,8 +195,7 @@ k+1 step으로 한 번 미리 가 보고 그 위치에서 방향을 다시 계�
 
 $\tau , \sigma > 0$ 은 각각 primal, dual의 step size이고 둘이 독립적
 
-$\tau\sigma||K||_2^{2}\le1$ 
-일 때 optimal 로 수렴
+$\tau\sigma\|K\|_2^{2}\le1$ 일 때 optimal 로 수렴
 
 step size를 재파라미터화 →  
 $\tau = \eta/\omega,\; \sigma=\omega\eta$
@@ -205,12 +204,12 @@ $\eta\in(0,\infty)$ 는 step size,
 $\omega \in(0,\infty)$ 는 primal weight임
 
 따라서 수렴 조건이  
-$\eta\le1/||K||_2$
+$\eta\le1/\|K\|_2$
 
 weighted Euclidean norm
 
 $$
-||z||_\omega := \sqrt{\,\omega\,||x||_2^2 + \frac{||y||_2^2}{\omega}\,},
+\|z\|_\omega := \sqrt{\,\omega\,\|x\|_2^2 + \frac{\|y\|_2^2}{\omega}\,},
 \quad z=(x,y)
 $$
 
@@ -220,7 +219,6 @@ $$
 
 <img width="1177" height="535" alt="image" src="https://github.com/user-attachments/assets/491ace8a-64b3-4c03-9cc7-a3816302f593" />
 <img width="1087" height="416" alt="image" src="https://github.com/user-attachments/assets/94a0dccf-be16-49ed-96bc-1b5232ef3bfa" />
-
 $t$ : 한 restart 안에서 몇 번 PDHG 했는지  
 
 $k$ : global, 지금까지 총 PDHG 스텝 수, k가 커질수록 $\eta' \approx \min(\bar\eta,\eta)$ 보수적 조정  
@@ -338,8 +336,8 @@ $z^{n+1,0} := z_c^{n,t}$ 로 reset, primal weight 업데이트 하는 과정
 
 ### **Primal weight updates**
 
-<img width="1283" height="330" alt="image" src="https://github.com/user-attachments/assets/078e1aee-f1f7-4ddb-ae92-c696a3d5fc0a" />
 
+<img width="1283" height="330" alt="image" src="https://github.com/user-attachments/assets/078e1aee-f1f7-4ddb-ae92-c696a3d5fc0a" />
 scale invariance 보장
 
 Algorithm 3 aims to choose the primal weight $\omega^{n}$ such that distance to optimality in the primal and dual is the same
@@ -347,35 +345,34 @@ Algorithm 3 aims to choose the primal weight $\omega^{n}$ such that distance to 
 $x,y$ 의 균형을 맞추는 설계
 
 $$
-||x^{n,t}-x^*||_{\omega^n} = \omega^n||x^{n,t}-x^*||_{2}
-$$  
+\|x^{n,t}-x^*\|_{\omega^n} = \omega^n\|x^{n,t}-x^*\|_{2}
+$$
 
 $$
-||y^{n,t}-y^*||_{\omega^n} = \frac{1}{\omega^n} ||y^{n,t}-y^*||_{2}
+\|y^{n,t}-y^*\|_{\omega^n} = \frac{1}{\omega^n}\|y^{n,t}-y^*\|_{2}
 $$
 
 $\omega$가 커지면 primal 거리가 커지고 dual은 작아짐  
 $\omega$가 작아지면 dual 거리가 커지고 primal 거리는 작아짐
 
-
 목표 →  
 $$
-\|x^{n,t}-x^*\|_{\omega^n} \approx ||y^{n,t}-y^*||_{\omega^n}
+\|x^{n,t}-x^*\|_{\omega^n} \approx \|y^{n,t}-y^*\|_{\omega^n}
 $$
 
 $$
-\omega^n = \frac{||y^{n,t}-y^*||_{2}}{||x^{n,t}-x^*||_{2}}
+\omega^n = \frac{\|y^{n,t}-y^*\|_{2}}{\|x^{n,t}-x^*\|_{2}}
 $$
 
 하지만 $x^*,y^*$는 모르는 값이므로 proxy 사용 →  
 직전 restart 대비 이동량  
 
 $$
-Δ^n_x = ||x^{n,0}-x^{n-1,0}||_2
+Δ^n_x = \|x^{n,0}-x^{n-1,0}\|_2
 $$
 
 $$
-Δ^n_y = ||y^{n,0}-y^{n-1,0}||_2
+Δ^n_y = \|y^{n,0}-y^{n-1,0}\|_2
 $$
 
 → $$Δ^n_y/Δ^n_x$$ 사용
@@ -433,14 +430,14 @@ $D_1,D_2$ 를 고르는 3가지 방법
 
 2. Pock–Chambolle  
    
-   $(D_1)_{jj} = \sqrt{||K_{j,:}||_{2-\alpha}}, \quad j=1,...,m_1+m_2$  
-   $(D_2)_{ii} = \sqrt{||K_{:,i}||_{\alpha}}, \quad i=1,...,n$  
+   $(D_1)_{jj} = \sqrt{\|K_{j,:}\|_{2-\alpha}}, \quad j=1,...,m_1+m_2$  
+   $(D_2)_{ii} = \sqrt{\|K_{:,i}\|_{\alpha}}, \quad i=1,...,n$  
    $\alpha = 1$
 
 3. Ruiz  
    
-   $(D_1)_{jj} = \sqrt{||K_{j,:}||_{\infty}},$  
-   $(D_2)_{ii} = \sqrt{||K_{:,i}||_{\infty}}$
+   $(D_1)_{jj} = \sqrt{\|K_{j,:}\|_{\infty}},$  
+   $(D_2)_{ii} = \sqrt{\|K_{:,i}\|_{\infty}}$
 
 PDLP 세팅에서 Ruiz 와 Pock–Chambolle 섞어서 사용
 
@@ -448,8 +445,8 @@ PDLP 세팅에서 Ruiz 와 Pock–Chambolle 섞어서 사용
 
 ### **Feasibility polishing**
 
-<img width="1004" height="435" alt="image" src="https://github.com/user-attachments/assets/c345dc7e-7b0d-47fe-831a-c74fe641e849" />
 
+<img width="1004" height="435" alt="image" src="https://github.com/user-attachments/assets/c345dc7e-7b0d-47fe-831a-c74fe641e849" />
 PDLP를 끝까지 최적화 하지 않고  
 어느 정도 풀린 시점에서 objective는 거의 유지한 채 feasibility만 polish 해주는 algorithm
 
