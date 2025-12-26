@@ -350,24 +350,33 @@ $$
 ||x^{n,t}-x^*||_{\omega^n} = \omega^n||x^{n,t}-x^*||_{2}
 $$  
 
-$$||y^{n,t}-y^*||_{\omega^n} = \frac{1}{\omega^n} ||y^{n,t}-y^*||_{2}
+$$
+||y^{n,t}-y^*||_{\omega^n} = \frac{1}{\omega^n} ||y^{n,t}-y^*||_{2}
 $$
 
-$$
-\omega$$가 커지면 primal 거리가 커지고 dual은 작아짐  
-$$\omega$$가 작아지면 dual 거리가 커지고 primal 거리는 작아짐
+$\omega$가 커지면 primal 거리가 커지고 dual은 작아짐  
+$\omega$가 작아지면 dual 거리가 커지고 primal 거리는 작아짐
+
 
 목표 →  
-$$||x^{n,t}-x^*||_{\omega^n} \approx ||y^{n,t}-y^*||_{\omega^n}$$
+$$
+\|x^{n,t}-x^*\|_{\omega^n} \approx ||y^{n,t}-y^*||_{\omega^n}
+$$
 
-$$\omega^n = \frac{||y^{n,t}-y^*||_{2}}{||x^{n,t}-x^*||_{2}}$$
+$$
+\omega^n = \frac{||y^{n,t}-y^*||_{2}}{||x^{n,t}-x^*||_{2}}
+$$
 
 하지만 $x^*,y^*$는 모르는 값이므로 proxy 사용 →  
 직전 restart 대비 이동량  
 
-$$Δ^n_x = ||x^{n,0}-x^{n-1,0}||_2$$
+$$
+Δ^n_x = ||x^{n,0}-x^{n-1,0}||_2
+$$
 
-$$Δ^n_y = ||y^{n,0}-y^{n-1,0}||_2$$
+$$
+Δ^n_y = ||y^{n,0}-y^{n-1,0}||_2
+$$
 
 → $$Δ^n_y/Δ^n_x$$ 사용
 
