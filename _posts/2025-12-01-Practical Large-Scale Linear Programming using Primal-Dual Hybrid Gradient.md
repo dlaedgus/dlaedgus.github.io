@@ -310,6 +310,8 @@ $z^{n+1,0} := z_c^{n,t}$ 로 reset, primal weight 업데이트 하는 과정
    \beta_{\text{sufficient}}\,
    \mu_n(z^{n,0}, z^{n-1,0})
    $$
+   이번 outer iteration 전체 결과가 이전 outer iteration 대비 필요한 만큼 $\beta$(0.9만큼)
+   개선되었는지 ? + 최근 inner step에서 saddle-point 이탈 정도가 오히려 증가했는지?
 
 2. **Necessary decay + no local progress in normalized duality gap**
    
@@ -323,19 +325,24 @@ $z^{n+1,0} := z_c^{n,t}$ 로 reset, primal weight 업데이트 하는 과정
    $$
    \mu_n(z_c^{n,t+1}, z^{n,0}) > \mu_n(z_c^{n,t}, z^{n,0})
    $$
+   이번 outer iteration 전체 결과가 이전 outer iteration 대비 필요한 만큼 $\beta$(0.9만큼
+   개선되었는지 ? + 최근 inner step에서 saddle-point 이탈 정도가 오히려 증가했는지?
 
 3. **Long inner loop**
    
    $$
    t \ge \beta_{\text{artificial}}\, k
    $$
+   현재 outer iteration 안에서 inner PDHG를 너무 오래 돌렸는지?
 
 ---
 
 ### **Primal weight updates**
 
+<img width="831" height="96" alt="image" src="https://github.com/user-attachments/assets/cc86f54e-d901-4246-a8e1-df84655171b8" />
 
 <img width="1283" height="330" alt="image" src="https://github.com/user-attachments/assets/078e1aee-f1f7-4ddb-ae92-c696a3d5fc0a" />
+
 scale invariance 보장
 
 Algorithm 3 aims to choose the primal weight $\omega^{n}$ such that distance to optimality in the primal and dual is the same
