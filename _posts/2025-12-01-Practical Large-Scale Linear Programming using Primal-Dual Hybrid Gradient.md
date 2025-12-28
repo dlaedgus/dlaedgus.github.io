@@ -96,6 +96,7 @@ Sparse matrix 자체는 GPU에 잘 맞지만, Sparse matrix factorization은 GPU
 - 연산 패턴이 단순하고 규칙적이어서
 - GPU 및 대규모 병렬화에 매우 적합
 
+<img width="907" height="434" alt="image" src="https://github.com/user-attachments/assets/8031574f-bf33-44df-a75b-8f0e9b57ac29" />
 
 
 ---
