@@ -24,6 +24,86 @@ FOMs의 단점 : *tailing-off* - moderately accurate solution은 빠르게 찾�
 
 matrix factorization에 의존하는 simplex method, interior-point methods는 large scale LP를 풀기 어렵지만 PDLP는 factorization이 없음, matrix-vector operation 연산 사용 → GPU환경 가능
 
+cuPDLP.jl: A GPU Implementation of Restarted Primal-Dual Hybrid Gradient for Linear Programming in Julia 논문에 의거한 보충 설명..
+
+### LP 문제 구조 전체 정리
+
+LP를 풀 때 유도되는 constraint matrix는 대부분 sparse matrix  
+즉, variable 수와 constraint 수는 매우 크지만, 각 제약식은 소수의 variable만 포함하므로 matrix의 대부분 원소는 0
+
+이러한 sparse matrix는
+
+- 행렬–벡터 곱  $\(Kx,\; K^\top y\)$ 은 효율적으로 계산 가능
+- 메모리 사용량이 작고 구조적 pattern를 유지할 수 있음
+- GPU 및 병렬 연산에 이론적으로는 매우 적합
+
+그러나 LP를 푸는 일반적 방법, 즉
+
+- Simplex method
+- Interior-point methods
+
+은 반복 과정에서 반드시 다음과 같은 sparse linear system을 풀어야 함
+
+$$
+\(Ax = b \; (A \text{ is sparse})\)
+$$
+
+이를 해결하기 위해:
+
+- Simplex는 주로 LU factorization
+- Interior-point는 주로 Cholesky factorization
+를 사용용
+
+이 matrix factorization 과정에서 문제 발생
+
+1. Fill-in 현상
+
+- 원래는 sparse였던 행렬이
+- 분해 과정에서 0이 아닌 원소가 대량으로 생성됨
+- 결과적으로 $\(L, U\)$ 또는 $\(L\)$이 dense에 가까워짐
+
+2. 메모리 폭증
+
+- factorization 결과를 저장하는 데 막대한 메모리 필요
+- 실제로는 문제 자체는 메모리에 들어가는데, factorization 결과가 안 들어가는 상황 발생것- 이것이 large scale LP에서 out-of-memory 오류의 주된 원인
+
+3. 병렬화 불가능성불가- LU / Cholesky는 계산 순서가 강하게 의존적
+- elimination 과정이 본질적으로 sequential
+- 불규칙한 메모리 접근과 branching 발생
+
+이로 인해 다음과 같은 결론에 도달한다.
+
+Sparse matrix 자체는 GPU에 잘 맞지만,  
+Sparse matrix factorization은 GPU에 구조적으로 맞지 않는다.
+
+따라서 simplex나 interior-point 기반 LP 솔버는:
+
+- GPU 활용이 극히 어렵고
+- 대부분 CPU 기반 단일 공유 메모리 구조에 머무르게 된다.
+
+이 한계를 극복하기 위해 등장한 접근이 바로 first-order methods이다.
+
+First-order method (예: PDHG, PDLP)는 다음과 같은 특징을 가진다.
+
+- 선형 시스템 \(Ax = b\)을 직접 풀지 않음
+- LU / Cholesky factorization을 완전히 제거
+- 반복마다 수행하는 연산은 오직  
+  \(Kx,\; K^\top y\)  
+  같은 sparse matrix–vector multiplication
+
+그 결과:
+
+- sparse 구조가 끝까지 유지되고
+- 메모리 사용량이 선형적으로 증가하며
+- 연산 패턴이 단순하고 규칙적이어서
+- GPU 및 대규모 병렬화에 매우 적합
+
+이러한 이유로, 대규모 LP에서는  
+**simplex / interior-point 대신 first-order method (PDHG, PDLP)**가  
+현실적인 대안으로 부상하게 된다.
+
+
+
 ---
 
 ### **Literature reivew**
