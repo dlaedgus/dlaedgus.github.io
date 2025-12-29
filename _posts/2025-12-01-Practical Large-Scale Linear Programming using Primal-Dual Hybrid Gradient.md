@@ -45,7 +45,7 @@ LP를 풀 때 유도되는 constraint matrix는 대부분 sparse matrix
 은 반복 과정에서 반드시 다음과 같은 sparse linear system을 풀어야 함
 
 $$
-\(Ax = b \; (A \text{ is sparse})\)
+Ax = b \; (A \text{ is sparse})
 $$
 
 이를 해결하기 위해:
@@ -385,7 +385,7 @@ $z^{n+1,0} := z_c^{n,t}$ 로 reset, primal weight 업데이트 하는 과정
    \beta_{\text{sufficient}}\,
    \mu_n(z^{n,0}, z^{n-1,0})
    $$
-   이번 outer iteration 전체 결과가 이전 outer iteration 대비 필요한 만큼 $\beta$(0.9만큼)
+   이번 outer iteration 전체 결과가 이전 outer iteration 대비 충분히 $\beta$(0.1)
    개선되었는지 ? + 최근 inner step에서 saddle-point 이탈 정도가 오히려 증가했는지?
 
 2. **Necessary decay + no local progress in normalized duality gap**
@@ -400,7 +400,7 @@ $z^{n+1,0} := z_c^{n,t}$ 로 reset, primal weight 업데이트 하는 과정
    $$
    \mu_n(z_c^{n,t+1}, z^{n,0}) > \mu_n(z_c^{n,t}, z^{n,0})
    $$
-   이번 outer iteration 전체 결과가 이전 outer iteration 대비 필요한 만큼 $\beta$(0.9만큼
+   이번 outer iteration 전체 결과가 이전 outer iteration 대비 필요한 만큼 $\beta$(0.9)
    개선되었는지 ? + 최근 inner step에서 saddle-point 이탈 정도가 오히려 증가했는지?
 
 3. **Long inner loop**
