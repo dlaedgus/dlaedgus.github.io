@@ -75,6 +75,14 @@ $$
 $$
 
 결국 본 연구는 단일 수리모형 하나가 아니라, **최적화로 계획을 만들고 Simulation으로 현실성을 평가한 뒤 Metaheuristic으로 계획 파라미터를 조정하는 Simulation-based Optimization**입니다.
+### Figure 1 — LP–Simulation–SA 폐루프
+
+<img width="1100" alt="생산계획 LP와 이산사건 시뮬레이션 및 simulated annealing을 연결한 전체 구조" src="/assets/img/paper-reviews/2026-08-20/ziarnetzky-fig1.svg" />
+
+> Source: Ziarnetzky and Mönch (2016), Figure 1. 논문 이해를 위한 일부 인용 및 크롭. © 2016 IEEE. [Original PDF](https://www.informs-sim.org/wsc16papers/263.pdf)
+
+Demand를 받은 LP가 Release Schedule을 만들고, FE–DB–BE–DC Simulation이 Cycle Time·Utilization·WIP·Backlog·Inventory를 평가합니다. SA는 이 결과로 최소 FE 병목가동률 $M$과 BE 추가 Capa $a$를 갱신합니다. 정적 계획값을 그대로 신뢰하지 않고 실행 시뮬레이션의 피드백으로 계획 파라미터를 다시 조정하는 구조입니다.
+
 
 ---
 
@@ -313,6 +321,14 @@ SA가 기준 $(M,a)=(0,0)$ 대비 얻은 평가 목적값 개선은 다음과 �
 | Low | 0.25 | 18.35% | 0.99% | 310.77분 |
 | High | 0.10 | 37.17% | 0.19% | 284.00분 |
 | High | 0.25 | 28.19% | 0.50% | 159.78분 |
+
+### Table 2 — SA 접근법의 성능
+
+<img width="1100" alt="평균 utilization과 demand CV별 utilization shortfall, cycle time violation, 개선율 결과표" src="/assets/img/paper-reviews/2026-08-20/ziarnetzky-table2.svg" />
+
+> Source: Ziarnetzky and Mönch (2016), Table 2. 논문 이해를 위한 일부 인용 및 크롭. © 2016 IEEE. [Original PDF](https://www.informs-sim.org/wsc16papers/263.pdf)
+
+원문의 결과표는 위에 옮긴 수치와 동일합니다. $Imp$만 볼 것이 아니라 $ASF$와 $VCT$도 함께 보아야, 목적값 개선과 운영제약 위반 사이의 Trade-off를 정확히 해석할 수 있습니다.
 
 두 가지를 함께 봐야 합니다.
 
