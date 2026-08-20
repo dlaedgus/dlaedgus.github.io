@@ -307,6 +307,7 @@ L^{\mathrm{Critic}}(\phi)
 $$
 
 학습에서는 서로 다른 Seed의 $B$개 Simulation을 병렬 실행하고 HGNN Action과 No-action Branch의 DGR 차이를 Reward로 모읍니다. $n$ Step Experience에서 Bootstrap Return $\widehat R$을 계산해 Z-score Normalize한 다음, 그 Return과 Critic 값으로 Advantage $\widehat A$를 계산하여 Policy와 Critic을 $K$회 Update합니다.
+
 ### Figure 2 — Counterfactual Branch를 포함한 학습 구조
 
 <img width="1100" alt="simulation state feature extraction, HGNN policy, action and no-action branches, PPO update flow" src="/assets/img/paper-reviews/2026-08-20/andelfinger-fig2.svg" />
@@ -375,6 +376,7 @@ HGNN은 Heuristic 대비 다음 개선을 보였습니다.
 - DGR: **1.74% 증가** $(+12.80)$
 
 No Action 대비로는 완료 LOT 2.50% 증가, Cycle Time 2.33% 감소, DGR 2.35% 증가입니다. Training 초반 30–40 Epoch 동안 KPI가 좋아질 때 Policy는 Lithography와 Diffusion Machine에 Efficiency Action을 더 자주 배정했습니다. 이는 Bottleneck 후보를 학습했다는 정성적 증거이지만, Causal Bottleneck Analysis나 설명가능성 검증까지 제공한 것은 아닙니다.
+
 ### Figure 3 — SMT2020 학습 중 FAB-level KPI 변화
 
 <img width="1100" alt="epoch별 daily going rate, completed lots, average cycle time 학습 곡선" src="/assets/img/paper-reviews/2026-08-20/andelfinger-fig3.svg" />
