@@ -211,6 +211,14 @@ $$
 - **Module 2:** 혼잡과 Cycle Time을 포함한 동적 성능평가, Queueing Network와 GA 사용
 
 모든 cut-off 조합마다 Queueing Simulation 또는 GA까지 수행하면 계산량이 매우 커집니다. 논문은 “cross-fab 이동이 적은 cut-off”를 먼저 LP로 압축한 뒤 route ratio만 정교하게 탐색하는 Decomposition을 택했습니다. 계산효율은 높지만, $\Pi$와 $R$을 동시에 최적화하지 않으므로 전체 문제의 Global Optimum을 보장하지는 않습니다.
+### Figure 1 — 두 단계 해법의 전체 구조
+
+<img width="1000" alt="cutoff point를 LP로 정하고 route ratio를 GA와 queueing network로 정하는 solution framework" src="/assets/img/paper-reviews/2026-08-20/wu-fig1.svg" />
+
+> Source: Wu et al. (2009), Figure 1. 논문 이해를 위한 일부 인용 및 크롭. [Original article](https://doi.org/10.1080/00207540701813219)
+
+Module 1은 LP로 Cut-off Point를 정해 Cross-FAB 물량을 줄이고, Module 2는 그 Cut-off를 고정한 채 Queueing Network와 GA로 Route Ratio를 조정합니다. 그림의 단방향 연결은 두 변수를 동시에 최적화하지 않는 Decomposition의 장점과 한계를 함께 보여줍니다.
+
 
 ---
 
@@ -284,6 +292,14 @@ Product 3을 보면 Mix에 따라 129번째와 78번째로 크게 달라집니�
 | $R_B$ | LP-GA | 169 | 0% |
 | $R_B$ | M-GA | 165 | 2.37% |
 | $R_B$ | N-GA | 161 | 4.73% |
+
+### Figure 3 — Throughput 증가에 따른 Cycle Time 비교
+
+<img width="1000" alt="LP-GA, midpoint GA, no-cross-fab GA의 throughput-cycle time curve" src="/assets/img/paper-reviews/2026-08-20/wu-fig3.svg" />
+
+> Source: Wu et al. (2009), Figure 3. 논문 이해를 위한 일부 인용 및 크롭. [Original article](https://doi.org/10.1080/00207540701813219)
+
+낮은 Throughput에서는 세 방법의 차이가 작지만 고부하 구간으로 갈수록 Cycle Time 차이가 커집니다. Cross-FAB 배분의 가치는 유휴 Capa가 충분할 때보다 병목과 운송 Queue가 함께 커지는 고부하 구간에서 더 크게 나타납니다.
 
 LP-GA의 Throughput은 M-GA보다 약 2.3%, N-GA보다 약 3.1–4.7% 높습니다. 논문의 Throughput–Cycle Time Curve에서는 생산량이 높아질수록 세 방법의 차이도 커지므로, Capa가 여유로운 상황보다 고부하 상황에서 cross-fab 배분의 가치가 더 크게 나타납니다.
 
