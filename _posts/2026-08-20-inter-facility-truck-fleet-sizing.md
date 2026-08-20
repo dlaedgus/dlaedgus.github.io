@@ -252,6 +252,14 @@ $x_i^k$와 $N_k$는 이산변수이고, $CT_k$는 Fleet Allocation에 따라 Que
 4. SQP가 목적과 제약의 Local Quadratic Approximation을 구성
 5. 다음 Fleet 후보로 이동하고 수렴할 때까지 반복
 
+### Figure 3 — MVA를 내장한 SQP 계산흐름
+
+<img width="1100" alt="fleet 후보에서 MVA로 cycle time과 throughput을 계산하고 SQP로 갱신하는 flowchart" src="/assets/img/paper-reviews/2026-08-20/amjath-fig3.svg" />
+
+> Source: Amjath et al. (2022), Figure 3, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). 원문 그림을 크롭했습니다. [Open-access article](https://doi.org/10.1016/j.joitmc.2022.100015)
+
+각 Fleet 후보에 대해 MVA가 Cycle Time과 Throughput을 계산하고, 수요제약을 만족하면 SQP가 다음 해를 탐색합니다. 즉, Queueing Network의 성능평가가 별도 사후분석이 아니라 최적화 반복 안에 들어갑니다.
+
 Nonlinear Optimization과 MVA는 Fortran 90으로 구현했고, IMSL Library의 `NNLPF` Subroutine이 Sequential Equality-Constrained Quadratic Programming을 수행합니다. 실험 Hardware는 Intel Core i3-7100U 2.40 GHz, RAM 4 GB입니다.
 
 다만 일반적인 SQP는 연속비선형계획 기법입니다. 논문은 이를 MINLP의 Approximation Method로 사용한다고 설명하지만, Binary·Integer Variable을 매 iteration에서 어떻게 강제하거나 보정했는지에 대한 세부 Pseudocode는 충분히 제공하지 않습니다. 따라서 결과표는 재현 가능한 Target이지만 Solver Layer를 완전히 동일하게 복원하려면 추가 구현가정이 필요합니다.
@@ -302,7 +310,15 @@ C: 1\rightarrow2\rightarrow13\rightarrow20\rightarrow15\rightarrow6
 \rightarrow16\rightarrow17\rightarrow21\rightarrow22\rightarrow23\rightarrow19\rightarrow1
 $$
 
-예를 들어 Node 4는 Class A Loading, Node 14는 Class B Loading, Node 20은 Class C Loading입니다. Node 10은 A와 B가 공유하는 Unloading Preparation Station입니다. 주요 평균 Service Time은 Loading A 8분, Loading B 19분, Loading C 8분, Node 10의 Unloading Preparation 8분입니다.
+예를 들어 Node 4는 Class A Loading, Node 14는 Class B Loading, Node 20은 Class C Loading입니다. Node 10은 A와 B가 공유하는 Unloading Preparation Station입니다. 주요 평균 Service Time은 Loading A 8분, Loading B 19분, Loading C 8분, Node 10의 Unloading Preparation 8분입니다.### Figure 6 — 실제 사례의 Multi-class Closed Queueing Network
+
+<img width="1100" alt="원자재 class A B C별 truck route와 loading unloading shared resource node network" src="/assets/img/paper-reviews/2026-08-20/amjath-fig6.svg" />
+
+> Source: Amjath et al. (2022), Figure 6, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). 원문 그림을 크롭했습니다. [Open-access article](https://doi.org/10.1016/j.joitmc.2022.100015)
+
+초록색은 이동·순환 Node, 황토색은 한 Class만 사용하는 Resource, 살구색은 여러 Class가 공유하는 Resource입니다. 특히 공유 Node의 Queue가 Fleet 증가에 따라 커지므로, Truck을 늘린다고 Throughput이 선형으로 증가하지 않습니다.
+
+
 
 ### 6.3 네 가지 BOM Scenario
 
