@@ -310,7 +310,9 @@ C: 1\rightarrow2\rightarrow13\rightarrow20\rightarrow15\rightarrow6
 \rightarrow16\rightarrow17\rightarrow21\rightarrow22\rightarrow23\rightarrow19\rightarrow1
 $$
 
-예를 들어 Node 4는 Class A Loading, Node 14는 Class B Loading, Node 20은 Class C Loading입니다. Node 10은 A와 B가 공유하는 Unloading Preparation Station입니다. 주요 평균 Service Time은 Loading A 8분, Loading B 19분, Loading C 8분, Node 10의 Unloading Preparation 8분입니다.### Figure 6 — 실제 사례의 Multi-class Closed Queueing Network
+예를 들어 Node 4는 Class A Loading, Node 14는 Class B Loading, Node 20은 Class C Loading입니다. Node 10은 A와 B가 공유하는 Unloading Preparation Station입니다. 주요 평균 Service Time은 Loading A 8분, Loading B 19분, Loading C 8분, Node 10의 Unloading Preparation 8분입니다.
+
+### Figure 6 — 실제 사례의 Multi-class Closed Queueing Network
 
 <img width="1100" alt="원자재 class A B C별 truck route와 loading unloading shared resource node network" src="/assets/img/paper-reviews/2026-08-20/amjath-fig6.svg" />
 
