@@ -211,6 +211,7 @@ $$
 - **Module 2:** 혼잡과 Cycle Time을 포함한 동적 성능평가, Queueing Network와 GA 사용
 
 모든 cut-off 조합마다 Queueing Simulation 또는 GA까지 수행하면 계산량이 매우 커집니다. 논문은 “cross-fab 이동이 적은 cut-off”를 먼저 LP로 압축한 뒤 route ratio만 정교하게 탐색하는 Decomposition을 택했습니다. 계산효율은 높지만, $\Pi$와 $R$을 동시에 최적화하지 않으므로 전체 문제의 Global Optimum을 보장하지는 않습니다.
+
 ### Figure 1 — 두 단계 해법의 전체 구조
 
 <img width="1000" alt="cutoff point를 LP로 정하고 route ratio를 GA와 queueing network로 정하는 solution framework" src="/assets/img/paper-reviews/2026-08-20/wu-fig1.svg" />
