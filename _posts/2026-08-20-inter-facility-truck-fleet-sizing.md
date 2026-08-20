@@ -256,7 +256,7 @@ $x_i^k$와 $N_k$는 이산변수이고, $CT_k$는 Fleet Allocation에 따라 Que
 
 <img width="1100" alt="fleet 후보에서 MVA로 cycle time과 throughput을 계산하고 SQP로 갱신하는 flowchart" src="/assets/img/paper-reviews/2026-08-20/amjath-fig3.svg" />
 
-> Source: Amjath et al. (2022), Figure 3, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). 원문 그림을 크롭했습니다. [Open-access article](https://doi.org/10.1016/j.joitmc.2022.100015)
+> Source: Amjath et al. (2022), Figure 3, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). 원문 그림을 크롭했습니다. [Open-access article](https://doi.org/10.1016/j.orp.2022.100245)
 
 각 Fleet 후보에 대해 MVA가 Cycle Time과 Throughput을 계산하고, 수요제약을 만족하면 SQP가 다음 해를 탐색합니다. 즉, Queueing Network의 성능평가가 별도 사후분석이 아니라 최적화 반복 안에 들어갑니다.
 
@@ -314,7 +314,7 @@ $$
 
 <img width="1100" alt="원자재 class A B C별 truck route와 loading unloading shared resource node network" src="/assets/img/paper-reviews/2026-08-20/amjath-fig6.svg" />
 
-> Source: Amjath et al. (2022), Figure 6, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). 원문 그림을 크롭했습니다. [Open-access article](https://doi.org/10.1016/j.joitmc.2022.100015)
+> Source: Amjath et al. (2022), Figure 6, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). 원문 그림을 크롭했습니다. [Open-access article](https://doi.org/10.1016/j.orp.2022.100245)
 
 초록색은 이동·순환 Node, 황토색은 한 Class만 사용하는 Resource, 살구색은 여러 Class가 공유하는 Resource입니다. 특히 공유 Node의 Queue가 Fleet 증가에 따라 커지므로, Truck을 늘린다고 Throughput이 선형으로 증가하지 않습니다.
 
