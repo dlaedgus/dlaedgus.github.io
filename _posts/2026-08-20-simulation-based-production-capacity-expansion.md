@@ -75,6 +75,7 @@ $$
 $$
 
 결국 본 연구는 단일 수리모형 하나가 아니라, **최적화로 계획을 만들고 Simulation으로 현실성을 평가한 뒤 Metaheuristic으로 계획 파라미터를 조정하는 Simulation-based Optimization**입니다.
+
 ### Figure 1 — LP–Simulation–SA 폐루프
 
 <img width="1100" alt="생산계획 LP와 이산사건 시뮬레이션 및 simulated annealing을 연결한 전체 구조" src="/assets/img/paper-reviews/2026-08-20/ziarnetzky-fig1.svg" />
