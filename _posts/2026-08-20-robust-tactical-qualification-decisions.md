@@ -146,6 +146,7 @@ MCQCP는 Operation 배분 $WIP$는 연속변수, Qualification 선택 $OQ$는 �
 ## 4) Demand Uncertainty와 Product Cannibalization
 
 확률분포를 추정하기 어려운 이유는 신제품 데이터가 부족하고, 제품별 수요가 독립적이지 않기 때문입니다. 같은 Application을 겨냥한 제품들은 서로 대체됩니다. 한 Micro-controller의 판매가 증가하면 같은 Family의 다른 제품 판매는 감소할 수 있습니다. 저자들은 이를 Product Family별 Budget으로 표현합니다.
+
 ### Figure 2 — 한 제품의 12개월 Demand Profile
 
 <img width="900" alt="평균수요 대비 월별 수요가 ramp-up과 ramp-down하는 제품 demand profile" src="/assets/img/paper-reviews/2026-08-20/perraudat-fig2.svg" />
@@ -354,6 +355,7 @@ Work Center A의 평균 PoU는 다음과 같이 증가했습니다.
 - $\theta=0.7$: 평균 31.99개, 최대 35개
 
 $\theta=0.7$의 최악에도 Machine당 평균 1.75개의 추가 Qualification이며, 가능한 신규 Pair 2,843개에 비하면 작습니다. Work Center B의 최대 PoU는 $\theta=0.1$에서 5개, $\theta=0.2$에서 19개였습니다.
+
 ### Figures 3–4 — Robustness 수준과 필요한 Qualification 수
 
 <img width="1200" alt="두 work center에서 robustness theta에 따른 robust qualification 수와 perfect hindsight 평균 비교" src="/assets/img/paper-reviews/2026-08-20/perraudat-fig3-4.svg" />
