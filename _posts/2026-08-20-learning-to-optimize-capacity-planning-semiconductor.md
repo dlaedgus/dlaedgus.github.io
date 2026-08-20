@@ -308,6 +308,15 @@ $$
 
 학습에서는 서로 다른 Seed의 $B$개 Simulation을 병렬 실행하고 HGNN Action과 No-action Branch의 DGR 차이를 Reward로 모읍니다. $n$ Step Experience에서 Bootstrap Return $\widehat R$을 계산해 Z-score Normalize한 다음, 그 Return과 Critic 값으로 Advantage $\widehat A$를 계산하여 Policy와 Critic을 $K$회 Update합니다.
 
+### Figure 2 — Counterfactual Branch를 포함한 학습 구조
+
+<img width="1100" alt="simulation state feature extraction, HGNN policy, action and no-action branches, PPO update flow" src="/assets/img/paper-reviews/2026-08-20/andelfinger-fig2.svg" />
+
+> Source: Andelfinger et al. (2025), Figure 2. 논문 이해를 위한 일부 인용 및 크롭. [arXiv manuscript](https://arxiv.org/abs/2509.15767)
+
+같은 Simulation State에서 Action Branch와 No-action Branch를 동시에 실행한 뒤 KPI 차이를 Reward로 계산합니다. 따라서 Policy는 단순히 이후 KPI가 좋아졌는지가 아니라, 아무 조치도 하지 않았을 때보다 선택한 Capa 개선조치가 얼마나 추가 효과를 냈는지를 학습합니다.
+
+
 ---
 
 ## 7) Simulation Environment와 실험설정
@@ -367,6 +376,15 @@ HGNN은 Heuristic 대비 다음 개선을 보였습니다.
 - DGR: **1.74% 증가** $(+12.80)$
 
 No Action 대비로는 완료 LOT 2.50% 증가, Cycle Time 2.33% 감소, DGR 2.35% 증가입니다. Training 초반 30–40 Epoch 동안 KPI가 좋아질 때 Policy는 Lithography와 Diffusion Machine에 Efficiency Action을 더 자주 배정했습니다. 이는 Bottleneck 후보를 학습했다는 정성적 증거이지만, Causal Bottleneck Analysis나 설명가능성 검증까지 제공한 것은 아닙니다.
+
+### Figure 3 — SMT2020 학습 중 FAB-level KPI 변화
+
+<img width="1100" alt="epoch별 daily going rate, completed lots, average cycle time 학습 곡선" src="/assets/img/paper-reviews/2026-08-20/andelfinger-fig3.svg" />
+
+> Source: Andelfinger et al. (2025), Figure 3. 논문 이해를 위한 일부 인용 및 크롭. [arXiv manuscript](https://arxiv.org/abs/2509.15767)
+
+DGR과 Completed Lots는 약 30–40 Epoch에서 가장 좋아지고 Average Cycle Time은 같은 구간에서 낮아집니다. 이후 다시 악화되는 곡선 때문에 최고 Epoch의 성능과 안정적으로 수렴한 최종 Policy의 성능을 구분해야 합니다.
+
 
 가장 중요한 결과는 **Epoch 40 이후 KPI가 초기 수준 쪽으로 다시 하락**했다는 점입니다. 저자들은 5주로 줄인 Scenario, 고정 Seed, Dedication Action 제거, EMA Reward Baseline도 시험했지만 같은 하락경향이 남았다고 보고합니다. 따라서 표의 SMT2020 성능은 안정적으로 수렴한 Final Policy가 아니라 성능이 좋았던 Epoch 40의 Evaluation입니다.
 
