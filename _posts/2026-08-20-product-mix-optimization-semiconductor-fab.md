@@ -45,6 +45,7 @@ math: true
 - **하위 의사결정:** 선택한 Mix가 만든 작업량을 Qualified Resource에 배분해 Capa-feasible한 Load Profile을 생성
 
 따라서 단순한 `제품별 수익 순위` 문제도 아니고, 주어진 물량을 장비에 나누는 `Load Balancing`만의 문제도 아닙니다. 제품 Mix가 바뀌면 Job Class별 부하가 바뀌고, 장비 대체 가능성에 따라 같은 Mix의 실제 Capa 소비도 달라지는 결합 문제입니다.
+
 ### Figure 1 — Product Mix가 장비 Utilization으로 변환되는 구조
 
 <img width="1200" alt="Product mix와 route, job class, equipment assignment, utilization profile의 연결 구조" src="/assets/img/paper-reviews/2026-08-20/klemmt-fig1.svg" />
@@ -311,6 +312,7 @@ Global LP는 2.6GHz Quad-Core, RAM 4GB 환경에서 IBM ILOG CPLEX로 풀었습�
 저자들은 실제 FAB 데이터를 변형한 사례에서도 Product Mix 최적화를 수행했습니다. X축에는 Connected Component, 즉 Work Center를 두고 현재 Mix가 만드는 최대 장비가동률, 평균가동률, Sensitivity Interval과 병목을 비교합니다.
 
 최적화된 Mix는 전체 **Layer Starts per Week를 유지**하면서 병목 Work Center의 Load를 유의미하게 낮췄습니다. 생산량 총합을 무조건 줄여 병목을 해소한 것이 아니라, 각 제품이 소비하는 Capa Pattern의 차이를 이용해 Mix를 바꾼 결과입니다. 저자들은 MES에 있는 모든 Route·Product·Operation·Equipment·Dedication을 가장 세밀한 수준으로 반영해도 전체 계산이 수 분 정도라고 보고합니다.
+
 ### Figure 6 — 현재 Product Mix의 Work Center별 부하
 
 <img width="1200" alt="현재 product mix에서 work center별 최대 및 평균 utilization과 sensitivity interval" src="/assets/img/paper-reviews/2026-08-20/klemmt-fig6.svg" />
